@@ -26,28 +26,19 @@ go to `openssl/crypto/ecdsa/` and run the patch.
 
 ## Store signatures
 
-You can apply signatures.patch, this will save signatures in `signatures.log` 
+You can apply `store_signatures.patch`, this will save signatures in `signatures.log` 
 
 go to `openssl/crypto/ecdsa/` and run the patch.
 
 ## Store nonces
 
-By applying this patch you will save the nonces generated every time the server is queried
+By applying the patch `store_nonces.patch` you will save the nonces generated every time the server is queried
 
-it saves to `server_nonces.log`
+it saves to `nonces.log`
 
-## Store timings
+## Store digests
 
-By applying this patch you will save the timings of the nonce multplication when the server is queried
-
-it saves to `server_timings.log`
-
-
-## Store hashes
-
-What you want to calculate an ECDSA signature is a truncated digest
-
-`truncated_digests.log`
+apply `store_truncated_digests.patch` and get the truncated digests there: `truncated_digests.log`
 
 
 
