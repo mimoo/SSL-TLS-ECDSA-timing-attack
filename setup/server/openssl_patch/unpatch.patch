@@ -1,0 +1,16 @@
+--- ../../../openssl_clean/crypto/ecdsa/ecs_ossl.c	2014-10-15 07:53:39.000000000 -0500
++++ ecs_ossl.c	2015-08-11 13:37:19.634110128 -0500
+@@ -147,11 +147,11 @@
+ 		/* We do not want timing information to leak the length of k,
+ 		 * so we compute G*k using an equivalent scalar of fixed
+ 		 * bit-length. */
+-
++		/*
+ 		if (!BN_add(k, k, order)) goto err;
+ 		if (BN_num_bits(k) <= BN_num_bits(order))
+ 			if (!BN_add(k, k, order)) goto err;
+-
++		*/
+ 		/* compute r the x-coordinate of generator * k */
+ 		if (!EC_POINT_mul(group, tmp_point, k, NULL, NULL, ctx))
+ 		{
