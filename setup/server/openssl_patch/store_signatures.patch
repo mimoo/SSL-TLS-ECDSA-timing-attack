@@ -1,0 +1,25 @@
+--- openssl_clean/crypto/ecdsa/ecs_sign.c	2014-08-06 17:12:03.000000000 -0500
++++ openssl_modified/crypto/ecdsa/ecs_sign.c	2015-08-11 15:38:18.241796371 -0500
+@@ -86,12 +86,22 @@
+ 	ECDSA_SIG *s;
+ 	RAND_seed(dgst, dlen);
+ 	s = ECDSA_do_sign_ex(dgst, dlen, kinv, r, eckey);
+ 	if (s == NULL)
+ 	{
+ 		*siglen=0;
+ 		return 0;
+ 	}
+ 	*siglen = i2d_ECDSA_SIG(s, &sig);
++
++	/* store signature object */
++	FILE* signature_file = fopen("signatures.log", "a");
++	char* rr = BN_bn2hex(s->r);
++	char* ss = BN_bn2hex(s->s);
++	fprintf(signature_file, "{ 'r': %s, 's': %s }\n", rr, ss);
++	OPENSSL_free(rr);
++	OPENSSL_free(ss);
++	fclose(signature_file);
++
+ 	ECDSA_SIG_free(s);
+ 	return 1;
+ }

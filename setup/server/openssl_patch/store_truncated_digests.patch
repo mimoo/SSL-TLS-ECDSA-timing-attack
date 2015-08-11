@@ -1,0 +1,19 @@
+--- openssl_clean/crypto/ecdsa/ecs_ossl.c	2014-10-15 07:53:39.000000000 -0500
++++ openssl_modified/crypto/ecdsa/ecs_ossl.c	2015-08-11 14:42:48.453940303 -0500
+@@ -278,6 +278,16 @@
+ 		ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_BN_LIB);
+ 		goto err;
+ 	}
++
++	/* store truncated digests */
++	FILE* digest_file = fopen("truncated_digests.log", "a");
++	int ii;
++	for(ii = 0; ii < dgst_len; ii++){
++	  fprintf(digest_file, "%x", dgst[ii]);
++	}
++	fprintf(digest_file, "\n");
++	fclose(digest_file);
++
+ 	do
+ 	{
+ 		if (in_kinv == NULL || in_r == NULL)
