@@ -1,8 +1,7 @@
 # timing_attack_ecdsa_tls
 Timing Attack on the ECDSA part of an ECDHE TLS handshake
 
-
-* `attack.c` is a to request signatures from the server and collect its response time (partially from modifications of FAU Timer and some code grabbed on https://idea.popcount.org/2013-01-28-counting-cycles---rdtsc/)
+* `setup/client/attack.c` is a to request signatures from the server and collect its response time (partially from modifications of FAU Timer and some code grabbed on https://idea.popcount.org/2013-01-28-counting-cycles---rdtsc/)
 
 * `lattice.sage` is the lattice attack, to execute with the Sage software.
 
@@ -12,4 +11,4 @@ Timing Attack on the ECDSA part of an ECDHE TLS handshake
 
 * in `tools/` you have tools to play with the data in `datasets/`. Read the README there for more info.
 
-
+* `PoC/` is an old proof of concept, it can run and find a key. It's not very pretty though

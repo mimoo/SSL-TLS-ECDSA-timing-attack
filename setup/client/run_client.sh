@@ -1,8 +1,6 @@
-#/bin/bash!
-rm output.csv
-rm responses/*
-rm responses.tar.gz
-gcc attack.c -o attack && taskset -c 0 ./attack
-tar -zcvf responses.tar.gz responses/
+#!/bin/bash
+rm responses.log 2> /dev/null
+taskset -c 0 ./attack "$1"
+
 
 

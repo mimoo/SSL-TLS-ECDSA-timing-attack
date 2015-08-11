@@ -1,5 +1,5 @@
-#/bin/bash!
-rm nonces.log
-rm signatures.log
-rm digests.log
-openssl-1.0.1j/apps/openssl s_server -cert server.pem -key server.key -cipher "ECDHE-ECDSA-AES128-SHA256" -serverpref -quiet
+#!/bin/bash
+rm nonces.log 2> /dev/null
+rm signatures.log 2> /dev/null
+rm digests.log 2> /dev/null
+"$1" s_server -cert server.pem -key server.key -cipher "ECDHE-ECDSA-AES128-SHA256" -serverpref -quiet 2> /dev/null
