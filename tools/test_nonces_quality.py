@@ -1,4 +1,4 @@
-with open('server_nonces.log') as f:
+with open('nonces.log') as f:
     nonces = f.readlines()
 
 max_len = 163 # very rare
