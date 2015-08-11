@@ -22,10 +22,10 @@
 
 typedef unsigned long long ticks;
 
-ticks cpu_ticks;			// duration of request in cpu ticks
-unsigned long long nano_seconds;	// duration of request in nanoseconds
-unsigned long long cpu_speed;		// aprox cpu speed
-unsigned char *receive_buffer;			// buffer to save the response
+ticks cpu_ticks;// duration of request in cpu ticks
+unsigned long long nano_seconds;// duration of request in nanoseconds
+unsigned long long cpu_speed;// aprox cpu speed
+unsigned char *receive_buffer;// buffer to save the response
 
 /**
  * error
@@ -43,7 +43,7 @@ void error(char *msg)
  *
  * runs assembly code to get number of cpu ticks 
  * 
- * @return	number of cpu ticks since cpu started
+ * @returnnumber of cpu ticks since cpu started
  */
 ticks get_ticks()
 {
@@ -52,12 +52,12 @@ ticks get_ticks()
   unsigned long   mayor = 0;
 
   asm             volatile(
-			   "cpuid \n"
-			   "rdtsc"
-			   :               "=a"(minor),
-					   "=d"(mayor)
-			   : "a" (0)
-			   : "%ebx", "%ecx"
+			      "cpuid \n"
+			         "rdtsc"
+			      :               "=a"(minor),
+					      "=d"(mayor)
+			      : "a" (0)
+			      : "%ebx", "%ecx"
 			   );
 
   ret = ((((ticks) mayor) << 32) | ((ticks) minor));
@@ -69,7 +69,7 @@ ticks get_ticks()
  *
  * calculates the current cpu clock speed
  *
- * @return	cpu speed in number of ticks
+ * @returncpu speed in number of ticks
  */
 unsigned long long get_aprox_cpu_speed(){
 
@@ -107,12 +107,12 @@ void init(){
  * @param request
  */
 uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, int len){
-	
+  
   int sockfd, n, ii;
   struct hostent *server;
   struct sockaddr_in serv_addr;
   uint64_t start_ticks, end_ticks;
-	
+  
   if(port_no <= 0){
     error("ERROR wrong port number");
   }
@@ -136,7 +136,7 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   }
   bzero(receive_buffer, BUFSIZE);
 
-  // Write all but the very last byte	
+  // Write all but the very last byte
   n = write(sockfd, request, len - 1);
 
   // Now send the last byte, which also starts processing at server side.
@@ -145,26 +145,24 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   // Start the timer...
   register unsigned cyc_high, cyc_low;               
   asm volatile("RDTSCP\n\t"                     
-	       "mov %%edx, %0\n\t"             
-	       "mov %%eax, %1\n\t"             
+	              "mov %%edx, %0\n\t"             
+	              "mov %%eax, %1\n\t"             
 	       : "=r" (cyc_high), "=r" (cyc_low)     
 	       :: RDTSC_DIRTY);                      
   start_ticks = ((uint64_t)cyc_high << 32) | cyc_low;
 
   /* We get rid of the error so we can process faster */
   /* if (n < 0){ 
- 	error("ERROR writing to socket"); 
-  } */
+     error("ERROR writing to socket"); 
+     } */
 
   // Read the first byte
   read(sockfd, receive_buffer, 1);
   
   // Stop the timer
-  register unsigned cyc_high, cyc_low;             
   asm volatile("RDTSCP\n\t"                        
-	       "mov %%edx, %0\n\t"           
-	       "mov %%eax, %1\n\t"           
-	       "CPUID\n\t"                   
+	              "mov %%edx, %0\n\t"           
+	              "mov %%eax, %1\n\t"           
 	       : "=r" (cyc_high), "=r" (cyc_low)   
 	       :: RDTSC_DIRTY);                    
   end_ticks = ((uint64_t)cyc_high << 32) | cyc_low; 
@@ -173,9 +171,8 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   n = read(sockfd, &receive_buffer[1], BUFSIZE) + 1;
 
   // save the answer
-  char output_file[200];
-  sprintf(output_file, "responses/resp_%i", index);
-  FILE* output = fopen(output_file, "wb");
+  FILE* response_file = fopen("responses.log", "a");
+  fprintf(response_file, "{ ");
 
   // analyze the packet and re-read if n is too small compared to the length
   int length;
@@ -184,12 +181,14 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   ii = 0;
 
   // ClientHello.random
-  fprintf(output, "6d70d7a74344e7ccf7c3ace7c77ff39f9d9b2ea56d26ac9292224aa32f17c10b");
+  fprintf(response_file, "'client_random': '6d70d7a74344e7ccf7c3ace7c77ff39f9d9b2ea56d26ac9292224aa32f17c10b', ");
 
   // ServerHello.random
+  fprintf(response_file, "'server_random': '");
   for(jj = 11; jj < 11 + 32; jj++){
-    fprintf(output, "%02x", receive_buffer[jj]);
+    fprintf(response_file, "%02x", receive_buffer[jj]);
   }
+  fprintf(response_file, "', ");
 
   // Let's skip the Certificate message
   while(node != 3){
@@ -203,27 +202,30 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   length = receive_buffer[ii+3];
 
   // ServerKeyExchange.params
+  fprintf(response_file, "'server_params': '");
   for(jj = ii; jj < ii + 4 + length; jj++){
-    fprintf(output, "%02x", receive_buffer[jj]);
+    fprintf(response_file, "%02x", receive_buffer[jj]);
   }
-
-  //
-  fprintf(output, " ");
+  fprintf(response_file, "', ");
   
   // ServerKeyExchange.Signature
   jj = ii + 4 + length + 4;
   length = (receive_buffer[jj - 2] << 8) + receive_buffer[jj - 1];
+  fprintf(response_file, "'server_signature': '");
   for(ii = jj; ii < jj + length; ii++){
-    fprintf(output, "%02x", receive_buffer[ii]);
+    fprintf(response_file, "%02x", receive_buffer[ii]);
   }
+  fprintf(response_file, "', ");
+
+  // cycles
+  fprintf(response_file, " 'time': %" PRIu64 " }\n", end_ticks - start_ticks);
 
   // close file
-  fclose(output);
-	
+  fclose(response_file);
+
   // Close socket
   close(sockfd);
 
-  // Return cycles
   return end_ticks - start_ticks;
 }
 
@@ -234,11 +236,11 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
  * at given ticks on a cpu with a given frequency
  * saves the result to nano_seconds
  *
- * @param no_ticks	number of cpu ticks 
- * @param speed		cpu speed in Hz
+ * @param no_ticksnumber of cpu ticks 
+ * @param speedcpu speed in Hz
  */
 void convert_ticks_to_nanosecs(ticks no_ticks, long long speed){
-	
+  
   nano_seconds = (double)no_ticks / (double)speed * 1000000000.0;
 
 }
@@ -253,7 +255,7 @@ void calculate_time(){
 
   cpu_speed = get_aprox_cpu_speed();
   convert_ticks_to_nanosecs(cpu_ticks, cpu_speed); 
-	
+  
 }
 
 /** 
@@ -261,7 +263,7 @@ void calculate_time(){
  *
  * returns the response of the last request
  * 
- * @return	the response of the last request
+* @returnthe response of the last request
  */
 char* get_response(){
 
@@ -273,7 +275,7 @@ char* get_response(){
  *
  * returns the number of cpu ticks the last request has taken
  * 
- * @return	number of cpu ticks
+ * @returnnumber of cpu ticks
  */
 ticks get_cpu_ticks(){
 
@@ -285,7 +287,7 @@ ticks get_cpu_ticks(){
  *
  * returns the time in nanoseconds the last request has taken
  * 
- * @return	time in nanoseconds
+ * @returntime in nanoseconds
  */
 long long get_time(){
 
@@ -297,7 +299,7 @@ long long get_time(){
  *
  * returns the cpu speed calculated by last calculte_time() call
  * 
- * @return	cpu speed in Hz
+ * @returncpu speed in Hz
  */
 unsigned long long get_speed(){
 
@@ -324,21 +326,15 @@ f3\x9f\x9d\x9b\x2e\xa5\x6d\x26\xac\x92\x92\x22\x4a\xa3\x2f\x17\xc1\x0b\x00\x00\x
 00\x0f\x00\x10\x00\x11\x00\x23\x00\x00\x00\x0d\x00\x20\x00\x1e\x06\x01\x06\x02\x06\x03\x05\x01\x05\x02\x05\x03\x04\x01\x04\x02\x04\x\
 03\x03\x01\x03\x02\x03\x03\x02\x01\x02\x02\x02\x03\x00\x0f\x00\x01\x01";
 
-  FILE* output_time = fopen("output.csv", "w");
-
   int iteration = atoi(argv[1]);
 
   uint64_t cycles;
   unsigned int ii;
   for(ii = 0; ii < iteration; ii++){
     init();
-
     printf("#%i\n", ii);
-    cycles = send_request(ii, "127.0.0.1", 4433, clienthello, 307);
-    fprintf(output_time, "%" PRIu64 "\n", cycles);
-
+    cycles = send_request(ii, "10.75.77.60", 4433, clienthello, 307);
   }
-  fclose(output_time);
 
   return 0;
 }

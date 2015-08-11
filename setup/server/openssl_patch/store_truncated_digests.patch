@@ -9,7 +9,7 @@
 +	FILE* digest_file = fopen("truncated_digests.log", "a");
 +	int ii;
 +	for(ii = 0; ii < dgst_len; ii++){
-+	  fprintf(digest_file, "%x", dgst[ii]);
++	  fprintf(digest_file, "%02x", dgst[ii]);
 +	}
 +	fprintf(digest_file, "\n");
 +	fclose(digest_file);
