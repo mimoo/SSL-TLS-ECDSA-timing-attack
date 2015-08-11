@@ -1,9 +1,16 @@
-# timing_attack_ecdsa_tls
-Timing Attack on the ECDSA part of an ECDHE TLS handshake
+# Timing Attack on the ECDSA nonces of OpenSSL
 
-* `setup/client/attack.c` is a to request signatures from the server and collect its response time (partially from modifications of FAU Timer and some code grabbed on https://idea.popcount.org/2013-01-28-counting-cycles---rdtsc/)
+This is a work trying to reproduce and improve on *Billy Bob Brumley* and *Nicola Tuveri* - [Remote Timing Attacks are Still Practical](https://eprint.iacr.org/2011/232.pdf).
 
-* `lattice.sage` is the lattice attack, to execute with the Sage software.
+This is a work in progress. The lattice attack works. The remote timing doesn't. If you know more about how to collect extremly accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
+
+![sucky stats](http://i.imgur.com/mDaWP2B.png)
+
+If you want to know more about the lattice attack. It is following a paper from *N.A. Howgrave-Graham, N.P. Smart* - [Lattice Attacks on Digital Signature Schemes](http://www.hpl.hp.com/techreports/1999/HPL-1999-90.pdf). But Babai sucks, so I implemented the embedded strategy instead (it reduces CVP to SVP), you can learn more in these two papers:
+
+* 
+
+## Structure
 
 * in `setup/` you can find how to setup the server and the client to reproduce the attack (and how to modify the server's openSSL to remove the fix)
 
