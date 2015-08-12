@@ -1,29 +1,31 @@
+import argparse
+
+# check arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("file", help="the files to get the tuples of signatures + truncated hashes from")
+args = parser.parse_args()
+
 # Config
-lattice_size = 35   # number of signatures
 trick = 2^163 / 2^8 # 7 leading bits
-print trick
+print "using trick", trick
 
 # Get data
-with open("nonces_155.log", "r") as f:
-    content = f.readlines()
+with open(args.file, "r") as f:
+    tuples = f.readlines()
 
+# Parse it
 digests = []
 signatures = []
 
-# Parse it
-for item in content[:lattice_size]:
-    data = item.strip("\n")
-    data = data.split(" ")
-    data = list(truc.strip("L") for truc in data)
-    data = map(int, data)
-    digests.append(data[1])
-    signatures.append((data[2], data[3]))
-
+for tuple in tuples:
+    obj = eval(tuple) # {'s': long, 'r': long, 'm': long}
+    digests.append(obj['m'])
+    signatures.append((obj['r'], obj['s']))
+    
 # get public key x coordinate
 pubx = 0x04f3e6ddffc4ba45282f3fabe0e8a220b98980387a
 
-# and public key modulo
-# taken from NIST or FIPS (http://csrc.nist.gov/publications/fips/fips186-3/fips_186-3.pdf)
+# and public key modulo taken from NIST or FIPS (http://csrc.nist.gov/publications/fips/fips186-3/fips_186-3.pdf)
 modulo = 5846006549323611672814742442876390689256843201587
 
 # Building Equations
@@ -36,6 +38,8 @@ m0 = digests[0]
 
 AA = [-1]
 BB = [0]
+
+print "building lattice of size", nn
 
 for ii in range(1, nn):
     mm = digests[ii]
@@ -80,3 +84,5 @@ if lattice[0,-1] % modulo == trick:
     
     print "found a key"
     print key
+else:
+    print "didn't find anything"

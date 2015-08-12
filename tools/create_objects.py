@@ -14,7 +14,7 @@ for ii in range(len(nonces)):
     signature = eval(signatures[ii]) # dictionnary stringified {'r': ..., 's': ...}
     rr = int(signature["r"], 16)
     ss = int(signature["s"], 16)
-    digest = int(digests[ii], 16) # hexstring
+    digest = digests[ii] # hexstring
     nonce = int(nonces[ii]) # int
     
     #
