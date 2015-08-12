@@ -2,7 +2,7 @@
 
 This is a work trying to reproduce and improve on *Billy Bob Brumley* and *Nicola Tuveri* - [Remote Timing Attacks are Still Practical](https://eprint.iacr.org/2011/232.pdf).
 
-This is a work in progress. The lattice attack works. The remote timing doesn't. If you know more about how to collect extremly accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
+This is a work in progress. The lattice attack works. The remote timing doesn't. If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
 
 ![sucky stats](http://i.imgur.com/mDaWP2B.png)
 
