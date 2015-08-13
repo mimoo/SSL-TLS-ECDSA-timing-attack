@@ -2,7 +2,7 @@
 
 This is a work trying to reproduce and improve on *Billy Bob Brumley* and *Nicola Tuveri* - [Remote Timing Attacks are Still Practical](https://eprint.iacr.org/2011/232.pdf).
 
-This is a work in progress. The lattice attack works. The remote timing doesn't. If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
+This is a **work in progress**. The lattice attack works. The remote timing doesn't. If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
 
 ![sucky stats](http://i.imgur.com/mDaWP2B.png)
 
@@ -20,3 +20,18 @@ If you want to know more about the lattice attack. It is following a paper from 
 * in `tools/` you have tools to play with the data in `datasets/`. Read the README there for more info.
 
 * `PoC/` is an old proof of concept, it can run and find a key. It's not very pretty though
+
+
+## Goal
+
+The goal here is to find better techniques to get good timing results and cancel the noise.
+
+The end goal is to release a script that targets an ip, request a bunch of signatures, try to mount the attack. If the server uses a vulnerable TLS implementation then it outputs the key.
+
+What's to do to achieve that?
+
+* combine `attack.c` and `lattice.sage` in one file
+* get better timing reasults
+* compute the hash and truncate it correctly (well actually we can copy the [openssl code](https://github.com/openssl/openssl/blob/master/crypto/ecdsa/ecs_ossl.c#L286) directly)
+* do the random subset algorithm to take care of false positives
+
