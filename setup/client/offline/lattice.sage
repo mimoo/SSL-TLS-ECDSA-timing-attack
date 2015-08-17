@@ -13,19 +13,24 @@ parser.add_argument("-v", "--verbose", action="store_true")
 args = parser.parse_args()
 
 ############################################
-# Functions
+# Helpers
 ##########################################
 
-def lattice_overview(BB):
-    for ii in range(BB.dimensions()[0]):
+def lattice_overview(BB, modulo, trick):
+    for ii in range(BB.dimensions()[_sage_const_0 ]):
         a = ('%02d ' % ii)
-        for jj in range(BB.dimensions()[1]):
-            a += '0' if BB[ii,jj] == 0 else 'X'
-            if BB.dimensions()[0] < 60:
+        for jj in range(BB.dimensions()[_sage_const_1 ]):
+            if BB[ii,jj] == _sage_const_0 :
+                a += '0'
+            elif BB[ii,jj] == modulo:
+                a += 'q'
+            elif BB[ii,jj] == trick:
+                a += 't'
+            else:
+                a += 'X'
+            if BB.dimensions()[_sage_const_0 ] < _sage_const_60 :
                 a += ' '
         print a
-
-
 
 ############################################
 # Core
@@ -89,6 +94,7 @@ def HowgraveGrahamSmart_ECDSA(digests, signatures, modulo, pubx, trick, reductio
         lattice = lattice.BKZ()
 
     # If a solution is found, format it
+    # Note that we only check the first basis vector, we could also check them all
     if trick == -1 or Mod(lattice[0,-1], modulo) == trick or Mod(lattice[0,-1], modulo) == Mod(-trick, modulo):
         # did we found trick or -trick?
         if trick != -1:
@@ -136,7 +142,7 @@ priv = 0x0099ad4abb9a955085709d1dede97aedf230ec0ec9
 modulo = 5846006549323611672814742442876390689256843201587
 
 # trick
-trick = int(modulo / 2^(args.bits - 1)) # using trick made for MSB known = args.bits
+trick = int(modulo / 2^(args.bits + 1)) # using trick made for MSB known = args.bits
 
 # LLL or BKZ?
 if args.LLL:
@@ -168,7 +174,7 @@ for tuple in tuples[:args.amount]:
     signatures.append((obj['r'], obj['s']))
 
 # Attack
-for tt in [trick, 1, -1]:
+for tt in [trick]:#, 1, -1]:
     status, key = HowgraveGrahamSmart_ECDSA(digests, signatures, modulo, pubx, tt, reduction)
     if status:
         if tt != -1:
