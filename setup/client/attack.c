@@ -8,6 +8,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/tcp.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -22,73 +23,14 @@
 
 typedef unsigned long long ticks;
 
-ticks cpu_ticks;// duration of request in cpu ticks
-unsigned long long nano_seconds;// duration of request in nanoseconds
-unsigned long long cpu_speed;// aprox cpu speed
-unsigned char *receive_buffer;// buffer to save the response
+unsigned char *receive_buffer; // buffer to save the response
 
-/**
- * error
- *
- * function for error messages
- * 
- */
 void error(char *msg)
 {
   perror(msg);
 }
 
-/**
- * get_ticks
- *
- * runs assembly code to get number of cpu ticks 
- * 
- * @returnnumber of cpu ticks since cpu started
- */
-ticks get_ticks()
-{
-  ticks           ret = 0;
-  unsigned long   minor = 0;
-  unsigned long   mayor = 0;
-
-  asm             volatile(
-			      "cpuid \n"
-			         "rdtsc"
-			      :               "=a"(minor),
-					      "=d"(mayor)
-			      : "a" (0)
-			      : "%ebx", "%ecx"
-			   );
-
-  ret = ((((ticks) mayor) << 32) | ((ticks) minor));
-
-  return ret;
-}
-/** 
- * get_aprox_cpu_speed
- *
- * calculates the current cpu clock speed
- *
- * @returncpu speed in number of ticks
- */
-unsigned long long get_aprox_cpu_speed(){
-
-  unsigned long long speed;
-  ticks start_ticks, end_ticks;
-  start_ticks = get_ticks();
-  sleep(1);
-  end_ticks = get_ticks();
-  speed = (end_ticks - start_ticks);
-
-  return speed;
-
-}
-
 void init(){
-
-  cpu_speed = 0;
-  cpu_ticks = 0;
-  nano_seconds = 0;
   if(receive_buffer != NULL){
     bzero(receive_buffer, BUFSIZE);
   }
@@ -97,15 +39,6 @@ void init(){
   }
 }
 
-/** 
- * send_request
- *
- * send a request to the given ip adress and port.
- *
- * @param ip Kommandozeilenparameter
- * @param port_no
- * @param request
- */
 uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, int len){
   
   int sockfd, n, ii;
@@ -116,7 +49,21 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   if(port_no <= 0){
     error("ERROR wrong port number");
   }
+
+  // open socket
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+  // disable Nagel's algorith on the socket
+  char* flag;
+  int result = setsockopt(sockfd,            /* socket affected */
+			  IPPROTO_TCP,     /* set option at TCP level */
+			  TCP_NODELAY,     /* name of option */
+			  (char *) &flag,  /* the cast is historical cruft */
+			  sizeof(int));    /* length of option value */
+
+
+
+
   if (sockfd < 0){
     error("ERROR opening socket");
   }
@@ -229,90 +176,6 @@ uint64_t send_request(unsigned int index, char* ip, int port_no, char* request, 
   return end_ticks - start_ticks;
 }
 
-/** 
- * convert_ticks_to_nanosecs
- *
- * calculates how much time in nanoseconds has passed 
- * at given ticks on a cpu with a given frequency
- * saves the result to nano_seconds
- *
- * @param no_ticksnumber of cpu ticks 
- * @param speedcpu speed in Hz
- */
-void convert_ticks_to_nanosecs(ticks no_ticks, long long speed){
-  
-  nano_seconds = (double)no_ticks / (double)speed * 1000000000.0;
-
-}
-
-/** 
- * calculate_time
- *
- * gets current cpu speed and calculates time from cpu ticks and cpu speed
- * 
- */
-void calculate_time(){
-
-  cpu_speed = get_aprox_cpu_speed();
-  convert_ticks_to_nanosecs(cpu_ticks, cpu_speed); 
-  
-}
-
-/** 
- * get_response
- *
- * returns the response of the last request
- * 
-* @returnthe response of the last request
- */
-char* get_response(){
-
-  return receive_buffer;
-}
-
-/** 
- * get_cpu_ticks
- *
- * returns the number of cpu ticks the last request has taken
- * 
- * @returnnumber of cpu ticks
- */
-ticks get_cpu_ticks(){
-
-  return cpu_ticks;
-}
-
-/** 
- * get_time
- *
- * returns the time in nanoseconds the last request has taken
- * 
- * @returntime in nanoseconds
- */
-long long get_time(){
-
-  return nano_seconds;
-}
-
-/** 
- * get_speed
- *
- * returns the cpu speed calculated by last calculte_time() call
- * 
- * @returncpu speed in Hz
- */
-unsigned long long get_speed(){
-
-  return cpu_speed;
-}
-
-
-/** 
- * main
- *
- * has no actual function
- *
- */
 int main(int argc, char *argv[])
 {
   char clienthello[] = "\x16\x03\x01\x01\x2e\x01\x00\x01\x2a\x03\x03\x6d\x70\xd7\xa7\x43\x44\xe7\xcc\xf7\xc3\xac\xe7\xc7\x7f\x\
@@ -330,6 +193,7 @@ f3\x9f\x9d\x9b\x2e\xa5\x6d\x26\xac\x92\x92\x22\x4a\xa3\x2f\x17\xc1\x0b\x00\x00\x
 
   uint64_t cycles;
   unsigned int ii;
+
   for(ii = 0; ii < iteration; ii++){
     init();
     printf("#%i\n", ii);
