@@ -6,6 +6,10 @@ This is a **work in progress**. The lattice attack works. The remote timing does
 
 ![sucky stats](http://i.imgur.com/mDaWP2B.png)
 
+**update on august 18th 2015**. I disabled Nagel's algorith, got better results, tried isolating the CPU, got even better results!
+
+![better](http://i.imgur.com/bF70cxr.png)
+
 If you want to know more about the lattice attack. It is following a paper from *N.A. Howgrave-Graham, N.P. Smart* - [Lattice Attacks on Digital Signature Schemes](http://www.hpl.hp.com/techreports/1999/HPL-1999-90.pdf). But Babai sucks, so I implemented the embedded strategy instead (it reduces CVP to SVP), you can learn more in these two papers:
 
 * Hardness of Computing the Most Significant Bits of Secret Keys in Diffie-Hellman and Related Schemes
