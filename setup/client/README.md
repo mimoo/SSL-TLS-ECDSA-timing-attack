@@ -40,10 +40,19 @@ sudo update-rc.d ondemand disable
 
 Don't forget to disable this after your attack :o)
 
+Note: if you have the `intel_pstate` driver you need to disable it and use another driver (`acpi-cpufreq` for ex):
 > You can check your settings with `cpufreq-info`. It will show a block of information for every core your processor has. Just check if all of then are in perfomance mode, and at the maximum speed of your processor.
 
-If this doesn't work: use intel P-state: https://www.kernel.org/doc/Documentation/cpu-freq/intel-pstate.txt
+https://wiki.archlinux.org/index.php/CPU_frequency_scaling
+https://wiki.archlinux.org/index.php/Kernel_modules
 
+`sudo cpufreq-set -c 1 -d 2600000`
+
+> The idea that frequency can be set to a single frequency is fiction for Intel Core processors. Even if the scaling driver selects a single P state the actual frequency the processor will run at is selected by the processor itself.
+
+> intel_pstate can be disabled at boot-time with kernel arg intel_pstate=disable 
+
+`GRUB_CMDLINE_LINUX_DEFAULT="isolcpus=1 intel_pstate=disable"`
 
 ### Dedicate one whole core to your attack only
 
@@ -65,7 +74,6 @@ This will disable power management in the system (but will also consume more pow
 For more fine-grained controlof when power-management is turned off, use the PM QOS interface in your application to tell the kernel when to disable power saving state transitions.
 
 from https://access.redhat.com/articles/65410
-
 
 ## Optimizations already made
 
