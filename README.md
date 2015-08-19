@@ -1,16 +1,18 @@
-# Timing Attack on the ECDSA nonces of OpenSSL
+# Timing/Lattice Attack on the ECDSA (binary curves) nonces of OpenSSL
 
 This is a work trying to reproduce and improve on *Billy Bob Brumley* and *Nicola Tuveri* - [Remote Timing Attacks are Still Practical](https://eprint.iacr.org/2011/232.pdf).
 
-This is a **Work In Progress**. You can reproduce my setup with what you find here. The lattice attack works. The remote timing doesn't really. If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
+This is a **Work In Progress**. You can reproduce my setup with what you find here. The lattice attack works. The remote timing doesn't really. 
+
+But first, if you want to know more about this research [check the latest draft of the whitepaper](whitepaper.pdf), and here are also direct links to the [Timing Attack](setup/client/attack.c) and the [Lattice Attack](setup/client/offline/lattice.sage).
+
+If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
 
 ![sucky stats](http://i.imgur.com/mDaWP2B.png)
 
 **update on august 18th 2015**. I disabled Nagel's algorith, got better results, tried isolating the CPU, got even better results!
 
 ![better](http://i.imgur.com/bF70cxr.png)
-
-If you want to know more about this research [check my whitepaper](whitepaper.pdf), it's also a WIP.
 
 ## Structure
 
