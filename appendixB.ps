@@ -1,0 +1,1125 @@
+%!PS-Adobe-3.0
+%%Title: setup/client/offline/lattice.sage
+%%For: david
+%%Creator: VIM - Vi IMproved 7.3 (2010 Aug 15)
+%%CreationDate: Wed Aug 19 16:08:14 2015
+%%DocumentData: Clean8Bit
+%%Orientation: Portrait
+%%Pages: (atend)
+%%PageOrder: Ascend
+%%BoundingBox: 59 49 564 800
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-Oblique
+%%+ font Courier-BoldOblique
+%%DocumentSuppliedResources: procset VIM-Prolog 1.4 1
+%%+ encoding VIM-latin1 1.0 0
+%%Requirements: duplex collate color
+%%EndComments
+%%BeginDefaults
+%%PageResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-Oblique
+%%+ font Courier-BoldOblique
+%%PageMedia: A4
+%%EndDefaults
+%%BeginProlog
+%%BeginResource: procset VIM-Prolog
+%%BeginDocument: /usr/share/vim/vim73/print/prolog.ps
+%!PS-Adobe-3.0 Resource-ProcSet
+%%Title: VIM-Prolog
+%%Version: 1.4 1
+%%EndComments
+% Editing of this file is NOT RECOMMENDED.  You run a very good risk of causing
+% all PostScript printing from VIM failing if you do.  PostScript is not called
+% a write-only language for nothing!
+/packedarray where not{userdict begin/setpacking/pop load def/currentpacking
+false def end}{pop}ifelse/CP currentpacking def true setpacking
+/bd{bind def}bind def/ld{load def}bd/ed{exch def}bd/d/def ld
+/db{dict begin}bd/cde{currentdict end}bd
+/T true d/F false d
+/SO null d/sv{/SO save d}bd/re{SO restore}bd
+/L2 systemdict/languagelevel 2 copy known{get exec}{pop pop 1}ifelse 2 ge d
+/m/moveto ld/s/show ld /ms{m s}bd /g/setgray ld/r/setrgbcolor ld/sp{showpage}bd
+/gs/gsave ld/gr/grestore ld/cp/currentpoint ld
+/ul{gs UW setlinewidth cp UO add 2 copy newpath m 3 1 roll add exch lineto
+stroke gr}bd
+/bg{gs r cp BO add 4 -2 roll rectfill gr}bd
+/sl{90 rotate 0 exch translate}bd
+L2{
+/sspd{mark exch{setpagedevice}stopped cleartomark}bd
+/nc{1 db/NumCopies ed cde sspd}bd
+/sps{3 db/Orientation ed[3 1 roll]/PageSize ed/ImagingBBox null d cde sspd}bd
+/dt{2 db/Tumble ed/Duplex ed cde sspd}bd
+/c{1 db/Collate ed cde sspd}bd
+}{
+/nc{/#copies ed}bd
+/sps{statusdict/setpage get exec}bd
+/dt{statusdict/settumble 2 copy known{get exec}{pop pop pop}ifelse
+statusdict/setduplexmode 2 copy known{get exec}{pop pop pop}ifelse}bd
+/c{pop}bd
+}ifelse
+/ffs{findfont exch scalefont d}bd/sf{setfont}bd
+/ref{1 db findfont dup maxlength dict/NFD ed{exch dup/FID ne{exch NFD 3 1 roll
+put}{pop pop}ifelse}forall/Encoding findresource dup length 256 eq{NFD/Encoding
+3 -1 roll put}{pop}ifelse NFD dup/FontType get 3 ne{/CharStrings}{/CharProcs}
+ifelse 2 copy known{2 copy get dup maxlength dict copy[/questiondown/space]{2
+copy known{2 copy get 2 index/.notdef 3 -1 roll put pop exit}if pop}forall put
+}{pop pop}ifelse dup NFD/FontName 3 -1 roll put NFD definefont pop end}bd
+CP setpacking
+(\004)cvn{}bd
+% vim:ff=unix:
+%%EOF
+%%EndDocument
+%%EndResource
+%%BeginResource: encoding VIM-latin1
+%%BeginDocument: /usr/share/vim/vim73/print/latin1.ps
+%!PS-Adobe-3.0 Resource-Encoding
+%%Title: VIM-latin1
+%%Version: 1.0 0
+%%EndComments
+/VIM-latin1[
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quotesingle
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash
+/zero /one /two /three /four /five /six /seven
+/eight /nine /colon /semicolon /less /equal /greater /question
+/at /A /B /C /D /E /F /G
+/H /I /J /K /L /M /N /O
+/P /Q /R /S /T /U /V /W
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore
+/grave /a /b /c /d /e /f /g
+/h /i /j /k /l /m /n /o
+/p /q /r /s /t /u /v /w
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /periodcentered
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis]
+/Encoding defineresource pop
+% vim:ff=unix:
+%%EOF
+%%EndDocument
+%%EndResource
+%%EndProlog
+%%BeginSetup
+595 842 0 sps
+1 nc
+T F dt
+T c
+%%IncludeResource: font Courier
+/_F0 /VIM-latin1 /Courier ref
+/F0 10 /_F0 ffs
+%%IncludeResource: font Courier-Bold
+/_F1 /VIM-latin1 /Courier-Bold ref
+/F1 10 /_F1 ffs
+%%IncludeResource: font Courier-Oblique
+/_F2 /VIM-latin1 /Courier-Oblique ref
+/F2 10 /_F2 ffs
+%%IncludeResource: font Courier-BoldOblique
+/_F3 /VIM-latin1 /Courier-BoldOblique ref
+/F3 10 /_F3 ffs
+/UO -1 d
+/UW 0.5 d
+/BO -2.5 d
+%%EndSetup
+%%Page: 1 1
+%%BeginPageSetup
+sv
+0 g
+F0 sf
+%%EndPageSetup
+F1 sf
+(setup/client/offline/lattice.sage                                             Page 1)59.5 792.4 ms
+F0 sf
+0.753 0 0.753 r
+(import)59.5 772.4 ms
+0 g
+( argparse)s
+0.753 0 0 r
+(############################################)59.5 752.4 ms
+(# Arguments)59.5 742.4 ms
+(##########################################)59.5 732.4 ms
+0 g
+(parser = argparse.ArgumentParser\(\))59.5 712.4 ms
+(parser.add_argument\()59.5 702.4 ms
+0 0 0.753 r
+("file")s
+0 g
+(, )s
+0.502 0.502 0 r
+(help)s
+0 g
+(=)s
+0 0 0.753 r
+("the files to get the tuples of signatures + trunca)s
+(ted hashes from")59.5 692.4 ms
+0 g
+(\))s
+(parser.add_argument\()59.5 682.4 ms
+0 0 0.753 r
+("amount")s
+0 g
+(, nargs=)s
+0 0 0.753 r
+('?')s
+0 g
+(, )s
+0.502 0.502 0 r
+(type)s
+0 g
+(=)s
+0.502 0.502 0 r
+(int)s
+0 g
+(, default=)s
+0 0 0.753 r
+(0)s
+0 g
+(, )s
+0.502 0.502 0 r
+(help)s
+0 g
+(=)s
+0 0 0.753 r
+("number of tuples)s
+( to use from the file")59.5 672.4 ms
+0 g
+(\))s
+(parser.add_argument\()59.5 662.4 ms
+0 0 0.753 r
+("bits")s
+0 g
+(, nargs=)s
+0 0 0.753 r
+('?')s
+0 g
+(, )s
+0.502 0.502 0 r
+(type)s
+0 g
+(=)s
+0.502 0.502 0 r
+(int)s
+0 g
+(, default=)s
+0 0 0.753 r
+(1)s
+0 g
+(, )s
+0.502 0.502 0 r
+(help)s
+0 g
+(=)s
+0 0 0.753 r
+("number of MSB know)s
+(n")59.5 652.4 ms
+0 g
+(\))s
+(parser.add_argument\()59.5 642.4 ms
+0 0 0.753 r
+("-L")s
+0 g
+(, )s
+0 0 0.753 r
+("--LLL")s
+0 g
+(, action=)s
+0 0 0.753 r
+("store_true")s
+0 g
+(\))s
+(parser.add_argument\()59.5 632.4 ms
+0 0 0.753 r
+("-v")s
+0 g
+(, )s
+0 0 0.753 r
+("--verbose")s
+0 g
+(, action=)s
+0 0 0.753 r
+("store_true")s
+0 g
+(\))s
+(args = parser.parse_args\(\))59.5 622.4 ms
+0.753 0 0 r
+(############################################)59.5 602.4 ms
+(# Helpers)59.5 592.4 ms
+(##########################################)59.5 582.4 ms
+0 0.502 0 r
+(def)59.5 562.4 ms
+0 g
+( )s
+0.502 0.502 0 r
+(lattice_overview)s
+0 g
+(\(BB, modulo, trick\):)s
+(    )59.5 552.4 ms
+0 0.502 0 r
+(for)s
+0 g
+( ii )s
+0 0.502 0 r
+(in)s
+0 g
+( )s
+0.502 0.502 0 r
+(range)s
+0 g
+(\(BB.dimensions\(\)[_sage_const_0 ]\):)s
+(        a = \()59.5 542.4 ms
+0 0 0.753 r
+('%02d ')s
+0 g
+( % ii\))s
+(        )59.5 532.4 ms
+0 0.502 0 r
+(for)s
+0 g
+( jj )s
+0 0.502 0 r
+(in)s
+0 g
+( )s
+0.502 0.502 0 r
+(range)s
+0 g
+(\(BB.dimensions\(\)[_sage_const_1 ]\):)s
+(            )59.5 522.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( BB[ii,jj] == _sage_const_0 :)s
+(                a += )59.5 512.4 ms
+0 0 0.753 r
+('0')s
+0 g
+(            )59.5 502.4 ms
+0 0.502 0 r
+(elif)s
+0 g
+( BB[ii,jj] == modulo:)s
+(                a += )59.5 492.4 ms
+0 0 0.753 r
+('q')s
+0 g
+(            )59.5 482.4 ms
+0 0.502 0 r
+(elif)s
+0 g
+( BB[ii,jj] == trick:)s
+(                a += )59.5 472.4 ms
+0 0 0.753 r
+('t')s
+0 g
+(            )59.5 462.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(                a += )59.5 452.4 ms
+0 0 0.753 r
+('X')s
+0 g
+(            )59.5 442.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( BB.dimensions\(\)[_sage_const_0 ] < _sage_const_60 :)s
+(                a += )59.5 432.4 ms
+0 0 0.753 r
+(' ')s
+0 g
+(        )59.5 422.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( a)s
+0.753 0 0 r
+(############################################)59.5 402.4 ms
+(# Core)59.5 392.4 ms
+(##########################################)59.5 382.4 ms
+0 0.502 0 r
+(def)59.5 362.4 ms
+0 g
+( )s
+0.502 0.502 0 r
+(HowgraveGrahamSmart_ECDSA)s
+0 g
+(\(digests, signatures, modulo, pubx, trick, reduction\):)s
+(    )59.5 352.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("# New attack")s
+0 g
+(    )59.5 332.4 ms
+0.753 0 0 r
+(# Building Equations)s
+0 g
+(    )59.5 322.4 ms
+0.753 0 0 r
+(# getting rid of the first equation)s
+0 g
+(    r0_inv = inverse_mod\(signatures[)59.5 312.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(][)s
+0 0 0.753 r
+(0)s
+0 g
+(], modulo\))s
+(    s0 = signatures[)59.5 302.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(][)s
+0 0 0.753 r
+(1)s
+0 g
+(])s
+(    m0 = digests[)59.5 292.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(])s
+(    AA = [-)59.5 272.4 ms
+0 0 0.753 r
+(1)s
+0 g
+(])s
+(    BB = [)59.5 262.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(])s
+(    nn = )59.5 242.4 ms
+0.502 0.502 0 r
+(len)s
+0 g
+(\(digests\))s
+(    )59.5 232.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("building lattice of size")s
+0 g
+(, nn + )s
+0 0 0.753 r
+(1)s
+0 g
+(    )59.5 212.4 ms
+0 0.502 0 r
+(for)s
+0 g
+( ii )s
+0 0.502 0 r
+(in)s
+0 g
+( )s
+0.502 0.502 0 r
+(range)s
+0 g
+(\()s
+0 0 0.753 r
+(1)s
+0 g
+(, nn\):)s
+(        mm = digests[ii])59.5 202.4 ms
+(        rr = signatures[ii][)59.5 192.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(])s
+(        ss = signatures[ii][)59.5 182.4 ms
+0 0 0.753 r
+(1)s
+0 g
+(])s
+(        ss_inv = inverse_mod\(ss, modulo\))59.5 172.4 ms
+(        AA_i = Mod\(-)59.5 152.4 ms
+0 0 0.753 r
+(1)s
+0 g
+( * s0 * r0_inv * rr * ss_inv, modulo\))s
+(        BB_i = Mod\(-)59.5 142.4 ms
+0 0 0.753 r
+(1)s
+0 g
+( * mm * ss_inv + m0 * r0_inv * rr * ss_inv, modulo\))s
+(        AA.append\(AA_i.lift\(\)\))59.5 132.4 ms
+(        BB.append\(BB_i.lift\(\)\))59.5 122.4 ms
+(    )59.5 102.4 ms
+0.753 0 0 r
+(# Embedding Technique \(CVP->SVP\))s
+0 g
+(    )59.5 92.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( trick != -)s
+0 0 0.753 r
+(1)s
+0 g
+(:)s
+(        lattice = Matrix\(ZZ, nn + )59.5 82.4 ms
+0 0 0.753 r
+(1)s
+0 g
+(\))s
+(    )59.5 72.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(        lattice = Matrix\(ZZ, nn\))59.5 62.4 ms
+re sp
+%%PageTrailer
+%%Page: 2 2
+%%BeginPageSetup
+sv
+0 g
+F0 sf
+%%EndPageSetup
+F1 sf
+(setup/client/offline/lattice.sage                                             Page 2)59.5 792.4 ms
+F0 sf
+(    )59.5 772.4 ms
+0.753 0 0 r
+(# Fill lattice)s
+0 g
+(    )59.5 762.4 ms
+0 0.502 0 r
+(for)s
+0 g
+( ii )s
+0 0.502 0 r
+(in)s
+0 g
+( )s
+0.502 0.502 0 r
+(range)s
+0 g
+(\(nn\):)s
+(        lattice[ii, ii] = modulo)59.5 752.4 ms
+(        lattice[)59.5 742.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(, ii] = AA[ii])s
+(    )59.5 722.4 ms
+0.753 0 0 r
+(# Add trick)s
+0 g
+(    )59.5 712.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( trick != -)s
+0 0 0.753 r
+(1)s
+0 g
+(:)s
+(        )59.5 702.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("adding trick:")s
+0 g
+(, trick)s
+(        BB.append\(trick\))59.5 692.4 ms
+(        lattice[nn] = vector\(BB\))59.5 682.4 ms
+(    )59.5 672.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(        )59.5 662.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("not adding any trick")s
+0 g
+(    )59.5 642.4 ms
+0.753 0 0 r
+(# Display lattice)s
+0 g
+(    )59.5 632.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( args.verbose:)s
+(        lattice_overview\(lattice\))59.5 622.4 ms
+(    )59.5 602.4 ms
+0.753 0 0 r
+(# BKZ or LLL)s
+0 g
+(    )59.5 592.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( reduction == )s
+0 0 0.753 r
+("LLL")s
+0 g
+(:)s
+(        )59.5 582.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("using LLL")s
+0 g
+(        lattice = lattice.LLL\(\))59.5 572.4 ms
+(    )59.5 562.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(        )59.5 552.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("using BKZ")s
+0 g
+(        lattice = lattice.BKZ\(\))59.5 542.4 ms
+(    )59.5 522.4 ms
+0.753 0 0 r
+(# If a solution is found, format it)s
+0 g
+(    )59.5 512.4 ms
+0.753 0 0 r
+(# Note that we only check the first basis vector, we could also check them all)s
+0 g
+(    )59.5 502.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( trick == -)s
+0 0 0.753 r
+(1)s
+0 g
+( )s
+0 0.502 0 r
+(or)s
+0 g
+( Mod\(lattice[)s
+0 0 0.753 r
+(0)s
+0 g
+(,-)s
+0 0 0.753 r
+(1)s
+0 g
+(], modulo\) == trick )s
+0 0.502 0 r
+(or)s
+0 g
+( Mod\(lattice[)s
+0 0 0.753 r
+(0)s
+0 g
+(,-)s
+0 0 0.753 r
+(1)s
+0 g
+(], modu)s
+(lo\) == Mod\(-trick, modulo\):)59.5 492.4 ms
+(        )59.5 482.4 ms
+0.753 0 0 r
+(# did we found trick or -trick?)s
+0 g
+(        )59.5 472.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( trick != -)s
+0 0 0.753 r
+(1)s
+0 g
+(:)s
+(            )59.5 462.4 ms
+0.753 0 0 r
+(# trick)s
+0 g
+(            )59.5 452.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( Mod\(lattice[)s
+0 0 0.753 r
+(0)s
+0 g
+(,-)s
+0 0 0.753 r
+(1)s
+0 g
+(], modulo\) == trick:)s
+(                solution = -)59.5 442.4 ms
+0 0 0.753 r
+(1)s
+0 g
+( * lattice[)s
+0 0 0.753 r
+(0)s
+0 g
+(] - vector\(BB\))s
+(            )59.5 432.4 ms
+0.753 0 0 r
+(# -trick)s
+0 g
+(            )59.5 422.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(                )59.5 412.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("we found a -trick instead of a trick")s
+0 g
+( )s
+0.753 0 0 r
+(# this shouldn't change)s
+( anything)59.5 402.4 ms
+0 g
+(                solution = lattice[)59.5 392.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(] + vector\(BB\))s
+(        )59.5 382.4 ms
+0.753 0 0 r
+(# if not using a trick, the problem is we don't know how the vector is const)s
+(ructed)59.5 372.4 ms
+0 g
+(        )59.5 362.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(            solution = -)59.5 352.4 ms
+0 0 0.753 r
+(1)s
+0 g
+( * lattice[)s
+0 0 0.753 r
+(0)s
+0 g
+(] - vector\(BB\) )s
+0.753 0 0 r
+(# so we choose this one, randoml)s
+(y :|)59.5 342.4 ms
+0 g
+(            )59.5 332.4 ms
+0.753 0 0 r
+(#solution = lattice[0] + vector\(BB\))s
+0 g
+(        )59.5 312.4 ms
+0.753 0 0 r
+(# get rid of \(..., trick\) if we used the trick)s
+0 g
+(        )59.5 302.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( trick != -)s
+0 0 0.753 r
+(1)s
+0 g
+(:)s
+(            vec = )59.5 292.4 ms
+0.502 0.502 0 r
+(list)s
+0 g
+(\(solution\))s
+(            vec.pop\(\))59.5 282.4 ms
+(            solution = vector\(vec\))59.5 272.4 ms
+(        )59.5 252.4 ms
+0.753 0 0 r
+(# get d)s
+0 g
+(        rr = signatures[)59.5 242.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(][)s
+0 0 0.753 r
+(0)s
+0 g
+(])s
+(        ss = signatures[)59.5 232.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(][)s
+0 0 0.753 r
+(1)s
+0 g
+(])s
+(        mm = digests[)59.5 222.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(])s
+(        nonce = solution[)59.5 212.4 ms
+0 0 0.753 r
+(0)s
+0 g
+(])s
+(        key = Mod\(\(ss * nonce - mm\) * inverse_mod\(rr, modulo\), modulo\))59.5 192.4 ms
+(        )59.5 172.4 ms
+0 0.502 0 r
+(return)s
+0 g
+( )s
+0.502 0.502 0 r
+(True)s
+0 g
+(, key)s
+(    )59.5 162.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(        )59.5 152.4 ms
+0 0.502 0 r
+(return)s
+0 g
+( )s
+0.502 0.502 0 r
+(False)s
+0 g
+(, )s
+0 0 0.753 r
+(0)s
+0.753 0 0 r
+(############################################)59.5 132.4 ms
+(# Our Attack)59.5 122.4 ms
+(##########################################)59.5 112.4 ms
+(# get public key x coordinate)59.5 92.4 ms
+0 g
+(pubx = )59.5 82.4 ms
+0 0 0.753 r
+(0x04f3e6ddffc4ba45282f3fabe0e8a220b98980387a)s
+0.753 0 0 r
+(# we have the private key for verifying our tests)59.5 62.4 ms
+0 g
+(priv = )59.5 52.4 ms
+0 0 0.753 r
+(0x0099ad4abb9a955085709d1dede97aedf230ec0ec9)s
+re sp
+%%PageTrailer
+%%Page: 3 3
+%%BeginPageSetup
+sv
+0 g
+F0 sf
+%%EndPageSetup
+F1 sf
+(setup/client/offline/lattice.sage                                             Page 3)59.5 792.4 ms
+F0 sf
+0.753 0 0 r
+(# and public key modulo taken from NIST or FIPS \(http://csrc.nist.gov/publications/f)59.5 762.4 ms
+(ips/fips186-3/fips_186-3.pdf\))59.5 752.4 ms
+0 g
+(modulo = )59.5 742.4 ms
+0 0 0.753 r
+(5846006549323611672814742442876390689256843201587)s
+0.753 0 0 r
+(# trick)59.5 722.4 ms
+0 g
+(trick = )59.5 712.4 ms
+0.502 0.502 0 r
+(int)s
+0 g
+(\(modulo / )s
+0 0 0.753 r
+(2)s
+0 g
+(^\(args.bits + )s
+0 0 0.753 r
+(1)s
+0 g
+(\)\) )s
+0.753 0 0 r
+(# using trick made for MSB known = args.bits)s
+(# LLL or BKZ?)59.5 692.4 ms
+0 0.502 0 r
+(if)59.5 682.4 ms
+0 g
+( args.LLL:)s
+(    reduction = )59.5 672.4 ms
+0 0 0.753 r
+("LLL")s
+0 0.502 0 r
+(else)59.5 662.4 ms
+0 g
+(:)s
+(    reduction = )59.5 652.4 ms
+0 0 0.753 r
+("BKZ")s
+0.753 0 0 r
+(# Get a certain amount of data)59.5 632.4 ms
+0 0.502 0 r
+(with)59.5 622.4 ms
+0 g
+( )s
+0.502 0.502 0 r
+(open)s
+0 g
+(\(args.)s
+0.502 0.502 0 r
+(file)s
+0 g
+(, )s
+0 0 0.753 r
+("r")s
+0 g
+(\) )s
+0 0.502 0 r
+(as)s
+0 g
+( f:)s
+(    tuples = f.readlines\(\))59.5 612.4 ms
+0 0.502 0 r
+(if)59.5 592.4 ms
+0 g
+( args.amount == )s
+0 0 0.753 r
+(0)s
+0 g
+(:)s
+(    nn = )59.5 582.4 ms
+0.502 0.502 0 r
+(len)s
+0 g
+(\(tuples\))s
+0 0.502 0 r
+(elif)59.5 572.4 ms
+0 g
+( args.amount <= )s
+0.502 0.502 0 r
+(len)s
+0 g
+(\(tuples\):)s
+(    nn = args.amount)59.5 562.4 ms
+0 0.502 0 r
+(else)59.5 552.4 ms
+0 g
+(:)s
+(    )59.5 542.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("can't use that many tuples, using max number of tuples available")s
+0 g
+(    nn = )59.5 532.4 ms
+0.502 0.502 0 r
+(len)s
+0 g
+(\(tuples\))s
+(    )59.5 522.4 ms
+0.502 0.502 0 r
+(print)59.5 512.4 ms
+0 g
+( )s
+0 0 0.753 r
+("building")s
+0 g
+(, nn, )s
+0 0 0.753 r
+("equations")s
+0.753 0 0 r
+(# Parse the data)59.5 492.4 ms
+0 g
+(digests = [])59.5 482.4 ms
+(signatures = [])59.5 472.4 ms
+0 0.502 0 r
+(for)59.5 452.4 ms
+0 g
+( )s
+0.502 0.502 0 r
+(tuple)s
+0 g
+( )s
+0 0.502 0 r
+(in)s
+0 g
+( tuples[:args.amount]:)s
+(    obj = )59.5 442.4 ms
+0.502 0.502 0 r
+(eval)s
+0 g
+(\()s
+0.502 0.502 0 r
+(tuple)s
+0 g
+(\) )s
+0.753 0 0 r
+(# {'s': long, 'r': long, 'm': long})s
+0 g
+(    digests.append\(obj[)59.5 432.4 ms
+0 0 0.753 r
+('m')s
+0 g
+(]\))s
+(    signatures.append\(\(obj[)59.5 422.4 ms
+0 0 0.753 r
+('r')s
+0 g
+(], obj[)s
+0 0 0.753 r
+('s')s
+0 g
+(]\)\))s
+0.753 0 0 r
+(# Attack)59.5 402.4 ms
+0 0.502 0 r
+(for)59.5 392.4 ms
+0 g
+( tt )s
+0 0.502 0 r
+(in)s
+0 g
+( [trick]:)s
+0.753 0 0 r
+(#, 1, -1]:)s
+0 g
+(    status, key = HowgraveGrahamSmart_ECDSA\(digests, signatures, modulo, pubx, tt, r)59.5 382.4 ms
+(eduction\))59.5 372.4 ms
+(    )59.5 362.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( status:)s
+(        )59.5 352.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( tt != -)s
+0 0 0.753 r
+(1)s
+0 g
+(:)s
+(            )59.5 342.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("found key with trick")s
+0 g
+(, trick)s
+(        )59.5 332.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(            )59.5 322.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("since we are not using any trick, might not be the solution")s
+0 g
+(        )59.5 312.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("key:")s
+0 g
+(, key)s
+(        )59.5 302.4 ms
+0 0.502 0 r
+(if)s
+0 g
+( key == priv:)s
+(            )59.5 292.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("the key is correct!")s
+0 g
+(        )59.5 282.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(            )59.5 272.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("key is incorrect")s
+0 g
+(    )59.5 262.4 ms
+0 0.502 0 r
+(else)s
+0 g
+(:)s
+(        )59.5 252.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+("found nothing")s
+0 g
+(    )59.5 232.4 ms
+0.502 0.502 0 r
+(print)s
+0 g
+( )s
+0 0 0.753 r
+(")s
+0.753 0 0.753 r
+(\\n)s
+0 0 0.753 r
+(")s
+re sp
+%%PageTrailer
+%%Trailer
+%%Pages: 3
+%%EOF
+
