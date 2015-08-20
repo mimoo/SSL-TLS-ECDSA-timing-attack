@@ -66,7 +66,7 @@
 
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
-Cryptography is a fragile thing and randomness is a major part of any cryptosystem. The following paper will show how little information about this sensitive random part of a system can lead to the total break of the system (recovery of the private keys). We'll see in particular how Timing Attacks can lead to the recovery of the secret nonce in a DSA or ECDSA signature, which is followed by the recovery of the private key (total break). The attack is based on lattice reduction techniques (LLL) and uses several problems to recover the nonces: the Closest Vector Problem and the Shortest Vector Problem. We will illustrate this attack by trying to reproduce a Timing Attack found by B.B.Brumley and N.Tuveri in OpenSSL in 2011, and we will see if the title of their whitepaper was indeed relevant (Remote Timing Attacks are Still Practical).\\
+In 2001, B.B.Brumley and N.Tuveri found a Remote Timing Attack on OpenSSL's ECDSA implementation for binary curves. We will study if the title of their paper was indeed relevant (Remote Timing Attacks are Still Practical). We improved on their Lattice Attack using the Embedding Strategy that reduces the Closest Vector Problem to the Shortest Vector Problem so as not to use Babai. We will detail (along with publishing the source code of the tools we used) our attempts to reproduce their experiments from a remote machine located on the same network with the server, and see that such attacks are not trivial and far from being practical. Finally we will see other attacks and counter measures.\\
 \\
 \textbf{Keywords:} DSA, ECDSA, Lattices, Timing Attacks, Remote Side-Channel Attacks, Howgrave-Graham and Smart, B.B.Brumley and N.Tuveri, Hidden Number Problem, Embedding Strategy, Short Nonces.\\
 
@@ -76,7 +76,7 @@ Cryptography is a fragile thing and randomness is a major part of any cryptosyst
 
 Randomness is an intrinsic part of any cryptosystem. It is the source we draw from to generate the secret keys of our Block Ciphers, it is the birthplace of the long keystreams engendered by our Stream Ciphers, the insurance of our Message Authentication Codes and ground zero for our Signatures. Being able to predict the origin of randomness of a cryptosystem will usually break the entirety of it. Using a bad Random Number Generator (\textbf{RNG}) is often the cause of many troubles, this is why nowadays we use the better \textbf{CSPRNGs} (Cryptographically Secure Pseudo Random Number Generators) that enable us to generate random numbers that are not predictable nor reveal any information about the previous random numbers generated (Forward Secrecy). One way of breaking these might be to use a backdoor, like Dual EC\cite{dualec} does, or to leak them through other channels.
 
-In this paper we will show how these ``Side-Channels'' can sometimes provide enough information to break a cryptosystem. In particular, how the knowledge of a few bits of dozen of nonces revealed by a Timing Attack can break DSA and ECDSA in applications like OpenSSL. In section 2 we will introduce Cryptographic Signatures with brief explanations on DSA and its Elliptic Curve variant ECDSA. In section 3 we will talk a bit about lattices and the interesting problems they carry, along with the tools past research has invented to solve them (or rather approximate them). In section 4 we will see how Howgrave-Graham and Smart attacked DSA with lattice-based algorithms. We will explain in details a special case of their attack: when the nonces are short, and will talk about improvements by using the Embedding Strategy. In section 5 we will start talking about a Timing Attack found by B.B.Brumley and N.Tuveri that recovers an OpenSSL server's private key by obtaining some information about the length of the nonces of its ECDSA signatures. We will follow by showing how to mount the attack and see how practical it really is according to our own experiments. In section 6 we will talk about related attacks and known counter-measures. Finally we'll end the paper with a short conclusion in section 7. In appendix A you will find the C code of the timing part of the attack, in appendix B you will find the Sage code of the lattice part of the attack. Both can be found up to date on \href{https://github.com/mimoo/timing_attack_ecdsa_tls}{the public repository associated to this paper}.
+In this paper we will show how these ``Side-Channels'' can sometimes provide enough information to break a cryptosystem. In particular, how the knowledge of a few bits of dozens of nonces revealed by a Timing Attack can break DSA and ECDSA in applications like OpenSSL. In section 2 we will introduce Cryptographic Signatures with brief explanations on DSA and its Elliptic Curve variant ECDSA. In section 3 we will talk a bit about lattices and the interesting problems they carry, along with the tools past research has invented to solve them (or rather approximate them). In section 4 we will see how Howgrave-Graham and Smart attacked DSA with lattice-based algorithms. We will explain in details a special case of their attack: when the nonces are short, and will talk about improvements by using the Embedding Strategy. In section 5 we will start talking about a Timing Attack found by B.B.Brumley and N.Tuveri that recovers an OpenSSL server's private key by obtaining some information about the length of the nonces of its ECDSA signatures. We will follow by showing how to mount the attack and see how practical it really is according to our own experiments. In section 6 we will talk about related attacks and known counter-measures. Finally we'll end the paper with a short conclusion in section 7. In appendix A you will find the C code of the timing part of the attack, in appendix B you will find the Sage code of the lattice part of the attack. Both can be found up to date on \href{https://github.com/mimoo/timing_attack_ecdsa_tls}{the public repository associated to this paper}.
 
 \section{Cryptographic Signatures}\label{rsa}
 
@@ -99,7 +99,7 @@ We won't go into the details of how to generate a pair of private and public key
 &s = k^{-1} ( H(m) + x r ) \pmod{q}
 \end{align*}
 
-Every time you want to sign something you must generate a new ephemeral private key $k$ in addition to your long term private key $x$. This is why we also call it a nonce as it has to be used only once.
+Every time you want to sign something you must generate a new ephemeral private key $k$ in addition to your long term private key $x$. This is why we also call it a nonce as it is a \textbf{n}umber that has to be used only \textbf{once}.
 
 The verification part is pretty straight forward, take the elements from the signature and from the public key and calculate:
 
@@ -896,7 +896,7 @@ length & amount \\
 \caption{Statistics on nonces generated for 10,000 signatures}
 \end{figure}
 
-We will discuss in the following sections how many nonces we need to perform the lattice attack.
+We will discuss in the following sections how many nonces we need to perform the Lattice Attack.
 
 
 \subsection{From a Remote Machine}
@@ -916,7 +916,7 @@ After collecting all the signatures we get rid of the 10 first samples and their
 \caption{the y axis represents the bitsize of the nonces, the x axis the time the OpenSSL server took to respond. They are obviously not correlated}
 \end{figure}
 
-Retrieving 500 tuples (signatures and truncated digests) that took the smallest amount of time from 100,000 signatures, we can see that we don't have enough nonces of small sizes in our set (see next section on the lattice attack for numbers), plus the amount of false-positive is extremely high. We then try to get the smallest time upper-bound that would contain enough small nonces. We arrive at approximately 5,000: the fastest 5,000 signatures of our 100,000 signatures set should contain enough small nonces to do our lattice attack. And as we can see the amount of false positive is still extremely high.
+Retrieving 500 tuples (signatures and truncated digests) that took the smallest amount of time from 100,000 signatures, we can see that we don't have enough nonces of small sizes in our set (see next section on the Lattice Attack for numbers), plus the amount of false-positive is extremely high. We then try to get the smallest time upper-bound that would contain enough small nonces. We arrive at approximately 5,000: the fastest 5,000 signatures of our 100,000 signatures set should contain enough small nonces to do our Lattice Attack. And as we can see the amount of false positive is still extremely high.
 
 \begin{table}[H]
 \parbox{.45\linewidth}{
@@ -967,13 +967,13 @@ length&amount&percentage\\
 }
 \end{table}
 
-To eliminate the false positives, the idea here is to select a random subset of let's say 42 tuples (if we are aiming for nonces smaller than 156 bits) and do a lattice attack, if we don't find anything build another random subset of the same size. Rinse and repeat. This leads to $1.36 \times 10^{104}$ different combinations, this is impossible and this is because our timing measurements are not correlated to the bitsize of the nonces. With better measurements this attack would indeed be devastating.
+To eliminate the false positives, the idea here is to select a random subset of let's say 42 tuples (if we are aiming for nonces smaller than 156 bits) and do a Lattice Attack, if we don't find anything build another random subset of the same size. Rinse and repeat. This leads to $1.36 \times 10^{104}$ different combinations, this is impossible and this is because our timing measurements are not correlated to the bitsize of the nonces. With better measurements this attack would indeed be devastating.
 
-\subsection{The lattice attack}
+\subsection{The Lattice Attack}
 
 Obviously our attack is not gonna work from a remote machine because our timings are not correlated with the length of the nonces. We can try a theoretic attack by selecting the nonces by hand.
 
-The code for the lattice attack can be found in Appendix B, it uses \textbf{Sage} and the embedding strategy talked about earlier.
+The code for the Lattice Attack can be found in Appendix B, it uses \textbf{Sage} and the embedding strategy talked about earlier.
 
 In our experiments, we can't solve for nonces greater than 157 bits (6 bits known). LLL also often provides worse results than \textbf{BKZ}. BKZ is another algorithm that approximate a solution for the SVP, it uses LLL but ends up with a smaller basis most of the time.
 
@@ -999,7 +999,7 @@ Let's first take a look at the fix proposed by B.B.Brumley and N.Tuveri followin
 \caption{the patch of B.B.Brumley and N.Tuveri in crypto/ecdsa/ecs\_ossl.c}
 \end{figure}
 
-The attack we presented works because some of the nonces are short enough. A solution could be to \textbf{make them all long enough} so that the underlying lattice attack could not happen. This is what B.B.Brumley and N.Tuveri proposed, and is facilitated by the properties of the scalar multiplication in Elliptic Curve Cryptography:
+The attack we presented works because some of the nonces are short enough. A solution could be to \textbf{make them all long enough} so that the underlying Lattice Attack could not happen. This is what B.B.Brumley and N.Tuveri proposed, and is facilitated by the properties of the scalar multiplication in Elliptic Curve Cryptography:
 
 $$ [k]P = [k + r]P \text{ if } r \text{ is a multiple of the group order} $$
 
@@ -1157,6 +1157,6 @@ It's important to notice that the Lattice Attack should still have \textbf{room 
 
 % appendix A : code of timer
 
-% appendix B : code of lattice attack
+% appendix B : code of Lattice Attack
 
 \end{document}
