@@ -66,7 +66,7 @@
 
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
-In 2001, B.B.Brumley and N.Tuveri found a Remote Timing Attack on OpenSSL's ECDSA implementation for binary curves. We will study if the title of their paper was indeed relevant (Remote Timing Attacks are Still Practical). We improved on their Lattice Attack using the Embedding Strategy that reduces the Closest Vector Problem to the Shortest Vector Problem so as not to use Babai. We will detail (along with publishing the source code of the tools we used) our attempts to reproduce their experiments from a remote machine located on the same network with the server, and see that such attacks are not trivial and far from being practical. Finally we will see other attacks and counter measures.\\
+In 2011, B.B.Brumley and N.Tuveri found a Remote Timing Attack on OpenSSL's ECDSA implementation for binary curves. We will study if the title of their paper was indeed relevant (Remote Timing Attacks are Still Practical). We improved on their Lattice Attack using the Embedding Strategy that reduces the Closest Vector Problem to the Shortest Vector Problem so as not to use Babai. We will detail (along with publishing the source code of the tools we used) our attempts to reproduce their experiments from a remote machine located on the same network with the server, and see that such attacks are not trivial and far from being practical. Finally we will see other attacks and counter measures.\\
 \\
 \textbf{Keywords:} DSA, ECDSA, Lattices, Timing Attacks, Remote Side-Channel Attacks, Howgrave-Graham and Smart, B.B.Brumley and N.Tuveri, Hidden Number Problem, Embedding Strategy, Short Nonces.\\
 
@@ -722,11 +722,11 @@ $$
 
 It is now clear that we can use the $n \times n$ matrix as a lattice in which we are looking for a vector (which is the integer linear combinations done with the coefficient vector $(-k_0, z_1, \hdots, z_{n-1})$) that should be very close to the vector $(0, B_1 , \hdots, B_{n-1})$ since their distance is the small vector $(k_0, \hdots, k_{n-1})$.
 
-In other words, we need to find a vector from the lattice spanned by the columns of the above $n \times n$ matrix that is closed to our non-lattice vector $(0, B_1 , \hdots, B_{n-1})$. This will allow us to compute the nonces vector $(-k_0, z_1, \hdots, z_{n-1})$. \textbf{This is an instance of the Closest Vector Problem}.
+In other words, we need to find a vector from the lattice spanned by the columns of the above $n \times n$ matrix that is closed to our non-lattice vector $(0, B_1 , \hdots, B_{n-1})$. This will allow us to compute the coefficient vector $(-k_0, z_1, \hdots, z_{n-1})$ which then would allow us to compute the nonces vector $(k_0, \hdots, k_{n-1})$. \textbf{This is an instance of the Closest Vector Problem}, we can then use one of Babai's procedure to try to solve it. Since these algorithms only promise approximations, these ways of finding the nonces are heuristics and not proven. Different lattices will give different outcomes, but as it is known, LLL often yields better results than expected.
 
 \subsection{The Embedding Strategy}
 
-While Howgrave-Graham and Smart talk about using the Babai procedure to solve the CVP, our tests show that it is not efficient enough. The well known Embedding Strategy allows to reduce the CVP problem to the SVP problem and thus direclty make use of a lattice basis reduction algorithm to solve the problem (like LLL).
+While Howgrave-Graham and Smart talk about using the Babai procedure to solve the CVP, our tests show that it is not efficient enough. The well known Embedding Strategy allows to heuristically reduce the CVP problem to the SVP problem and thus directly make use of a lattice basis reduction algorithm to solve the problem (like LLL).
 
 This is how it works: we add our non-lattice vector $u$ in the basis, so that it is now part of the lattice. Remember, we are looking for a very close lattice vector $v$ to our non-lattice vector $u$, since both these vectors are in the lattice we hope that our reduction algorithm will find $u - v$ or $v - u$ which is in our lattice and should be really small, the heuristic also says to increase the lattice's dimension and to only give a coefficient of the new dimension to our new basis vector $u$. This way we can test if our solution has used our vector $u$ by checking if the smallest vector of our reduced basis has that (negative) value as extra dimension.
 
@@ -762,7 +762,7 @@ In this paper we will focus on Timing Attacks, which are one of the only viable 
 In ECDSA, to counter Timing Attacks one of the state-of-the-art technique is to use a \textbf{Constant-Time} algorithm. For binary curves, in OpenSSL, the \textbf{Montgomery Ladder} algorithm is used during the point multiplication of $r = [k] P$. Unfortunately, an optimization was present right before the algorithm:
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{openssl_vuln.png}
+\includegraphics[width=\textwidth]{vuln.png}
 \caption{The optimization that leads to a timing vulnerability in old version of OpenSSL}
 \end{figure}
 
@@ -995,7 +995,7 @@ These kind of ``relaxed'' attacks on DSA and ECDSA are even more problematic on 
 Let's first take a look at the fix proposed by B.B.Brumley and N.Tuveri following their finding.
 
 \begin{figure}[H]
-\includegraphics[width=\textwidth]{uncommented_patch.png}
+\includegraphics[width=\textwidth]{patch.png}
 \caption{the patch of B.B.Brumley and N.Tuveri in crypto/ecdsa/ecs\_ossl.c}
 \end{figure}
 
