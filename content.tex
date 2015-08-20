@@ -763,7 +763,7 @@ In ECDSA, to counter Timing Attacks one of the state-of-the-art technique is to 
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{vuln.png}
-\caption{The optimization that leads to a timing vulnerability in old version of OpenSSL}
+\caption{The optimization that leads to a timing vulnerability in \textit{crypto/ec/ec2\_mult.c} in the old version of OpenSSL}
 \end{figure}
 
 This made the computation of the signature appear faster when the binary size of the nonce $k$ was shorter, and slower when it was longer. The time OpenSSL took to compute an ECDSA signature was leaking the length of the nonces!
@@ -807,7 +807,7 @@ We modified \href{ftp://ftp.openssl.org/source/old/1.0.1/openssl-1.0.1j.tar.gz}{
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{commented_patch.png}
-\caption{the patch commented in crypto/ecdsa/ecs\_ossl.c}
+\caption{the patch commented in \textit{crypto/ecdsa/ecs\_ossl.c}}
 \end{figure}
 
 Instead of creating a client packet that only allows for our ephemeral ECDSA handshake, we can use a server that only accepts that kind of ciphersuite:
@@ -996,7 +996,7 @@ Let's first take a look at the fix proposed by B.B.Brumley and N.Tuveri followin
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{patch.png}
-\caption{the patch of B.B.Brumley and N.Tuveri in crypto/ecdsa/ecs\_ossl.c}
+\caption{the patch of B.B.Brumley and N.Tuveri in \textit{crypto/ecdsa/ecs\_ossl.c}}
 \end{figure}
 
 The attack we presented works because some of the nonces are short enough. A solution could be to \textbf{make them all long enough} so that the underlying Lattice Attack could not happen. This is what B.B.Brumley and N.Tuveri proposed, and is facilitated by the properties of the scalar multiplication in Elliptic Curve Cryptography:
