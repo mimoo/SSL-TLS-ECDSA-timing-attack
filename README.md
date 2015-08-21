@@ -27,16 +27,7 @@ If you know more about how to collect extremely accurate timing samples on a rem
 * `PoC/` is an old proof of concept, it can run and find a key. It's not very pretty though
 
 
-## Goal
+## Current leads I'm following
 
-The goal here is to find better techniques to get good timing results and cancel the noise.
-
-The end goal is to release a script that targets an ip, request a bunch of signatures, try to mount the attack. If the server uses a vulnerable TLS implementation then it outputs the key.
-
-What's to do to achieve that?
-
-* get better timing results
-* compute the hash and truncate it correctly (well actually we can copy the [openssl code](https://github.com/openssl/openssl/blob/master/crypto/ecdsa/ecs_ossl.c#L286) directly)
-* maybe improve on the lattice attack? Nguyen seems to have better results with his.
-* do the random subset algorithm to take care of false positives
-* combine `attack.c` and `lattice.sage` in one file
+* Time UDP packet instead (and target DTLS)
+* Time with `SO_TIMESTAMP` on raw sockets (looks like it is only possible with UDP)
