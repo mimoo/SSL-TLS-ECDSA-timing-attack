@@ -2,9 +2,11 @@
 
 This is a work trying to reproduce and improve on *Billy Bob Brumley* and *Nicola Tuveri* - [Remote Timing Attacks are Still Practical](https://eprint.iacr.org/2011/232.pdf).
 
-This is a **Work In Progress**. You can reproduce my setup with what you find here. The lattice attack works. The remote timing doesn't really. 
+You can reproduce my setup with what you find here. The lattice attack works. The remote timing is not precise enough to make the attack work. If you can get the same setup and better timing that what I get below then you should contact me :)
 
-But first, if you want to know more about this research [check the latest draft of the whitepaper](whitepaper.pdf), and here are also direct links to the [Timing Attack](setup/client/attack.c) and the [Lattice Attack](setup/client/offline/lattice.sage). And also a [demo](https://www.youtube.com/watch?v=P2NbKHn7RkI&feature=youtu.be)
+It works on an unpatched version of OpenSSL, but theorically it should work on any TLS framework that has such a timing attack (and not only on binary curves).
+
+But first, if you want to know more about this research [check the latest draft of the whitepaper](whitepaper.pdf), and here are also direct links to the [Timing Attack](setup/client/attack.c) and the [Lattice Attack](setup/client/offline/lattice.sage). And also a [demo](https://www.youtube.com/watch?v=P2NbKHn7RkI&feature=youtu.be) of the attack.
 
 If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
 
