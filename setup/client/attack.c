@@ -197,7 +197,7 @@ f3\x9f\x9d\x9b\x2e\xa5\x6d\x26\xac\x92\x92\x22\x4a\xa3\x2f\x17\xc1\x0b\x00\x00\x
   for(ii = 0; ii < iteration; ii++){
     init();
     printf("#%i\n", ii);
-    cycles = send_request(ii, "10.75.77.60", 4433, clienthello, 307);
+    cycles = send_request(ii, "12.12.12.12", 4433, clienthello, 307);
   }
 
   return 0;
