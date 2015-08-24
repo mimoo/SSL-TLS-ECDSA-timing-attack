@@ -27,7 +27,11 @@ If you know more about how to collect extremely accurate timing samples on a rem
 * `PoC/` is an old proof of concept, it can run and find a key. It's not very pretty though
 
 
-## Current leads I'm following
+## To Do/Try
 
-* Time UDP packet instead (and target DTLS)
-* Time with `SO_TIMESTAMP` on raw sockets (looks like it is only possible with UDP)
+* Time with `SO_TIMESTAMPING` on raw sockets. Use a NIC that allows for hardware TCP timestamping.
+* Find other ways to optimize the network card ([Tuning 10Gb network cards on Linux by Breno Henrique Leitao, IBM](https://wiki.chipp.ch/twiki/pub/CmsTier3/NodeTypeFileServerHPDL380G7/ols2009-pages-169-1842.pdf)).
+* Time UDP packet instead (and target DTLS).
+* Look at Nguyen way's of attacking ECDSA, he seems to build his lattice differently.
+* Modify the ClientHello from the timing attack to only accept ECDHE-ECDSA... (so that we can test it against different frameworks)
+* Truncate the hash correctly in the timing attack
