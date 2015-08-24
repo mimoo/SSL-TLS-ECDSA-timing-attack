@@ -4,6 +4,9 @@
 \usepackage[utf8]{inputenc}
 %\usepackage[francais]{babel}
 
+% to get hyphenation on accented words
+\usepackage[T1]{fontenc}
+
 % href
 \usepackage{hyperref}
 \hypersetup{
@@ -66,7 +69,7 @@
 
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
-In 2011, B.B.Brumley and N.Tuveri found a Remote Timing Attack on OpenSSL's ECDSA implementation for binary curves. We will study if the title of their paper was indeed relevant (Remote Timing Attacks are Still Practical). We improved on their Lattice Attack using the Embedding Strategy that reduces the Closest Vector Problem to the Shortest Vector Problem so as not to use Babai. We will detail (along with publishing the source code of the tools we used) our attempts to reproduce their experiments from a remote machine located on the same network with the server, and see that such attacks are not trivial and far from being practical. Finally we will see other attacks and counter measures.\\
+In 2011, B.B.Brumley and N.Tuveri found a remote timing attack on OpenSSL's ECDSA implementation for binary curves. We will study if the title of their paper was indeed relevant (Remote Timing Attacks are Still Practical). We improved on their lattice attack using the Embedding Strategy that reduces the Closest Vector Problem to the Shortest Vector Problem so as to avoid using Babai's procedures to solve the CVP and rely on the better experimental results of LLL. We will detail (along with publishing the source code of the tools we used) our attempts to reproduce their experiments from a remote machine located on the same network with the server, and see that such attacks are not trivial and far from being practical. Finally we will see other attacks and countermeasures.\\
 \\
 \textbf{Keywords:} DSA, ECDSA, Timing Attacks, Remote Side-Channel Attacks, OpenSSL, Howgrave-Graham and Smart, B.B.Brumley and N.Tuveri, Hidden Number Problem, Lattices, SVP, CVP, Babai, LLL, BKZ, Embedding Strategy, Short Nonces.\\
 
@@ -76,23 +79,23 @@ In 2011, B.B.Brumley and N.Tuveri found a Remote Timing Attack on OpenSSL's ECDS
 
 Randomness is an intrinsic part of any cryptosystem. It is the source we draw from to generate the secret keys of our Block Ciphers, it is the birthplace of the long keystreams engendered by our Stream Ciphers, the insurance of our Message Authentication Codes and ground zero for our Signatures. Being able to predict the origin of randomness of a cryptosystem will usually break the entirety of it. Using a bad Random Number Generator (\textbf{RNG}) is often the cause of many troubles, this is why nowadays we use the better \textbf{CSPRNGs} (Cryptographically Secure Pseudo Random Number Generators) that enable us to generate random numbers that are not predictable nor reveal any information about the previous random numbers generated (Forward Secrecy). One way of breaking these might be to use a backdoor, like Dual EC\cite{dualec} does, or to leak them through other channels.
 
-In this paper we will show how these ``Side-Channels'' can sometimes provide enough information to break a cryptosystem. In particular, how the knowledge of a few bits of dozens of nonces revealed by a Timing Attack can break DSA and ECDSA in applications like OpenSSL. In section 2 we will introduce Cryptographic Signatures with brief explanations on DSA and its Elliptic Curve variant ECDSA. In section 3 we will talk a bit about lattices and the interesting problems they carry, along with the tools past research has invented to solve them (or rather approximate them). In section 4 we will see how Howgrave-Graham and Smart attacked DSA with lattice-based algorithms. We will explain in details a special case of their attack: when the nonces are short, and will talk about improvements by using the Embedding Strategy. In section 5 we will start talking about a Timing Attack found by B.B.Brumley and N.Tuveri that recovers an OpenSSL server's private key by obtaining some information about the length of the nonces of its ECDSA signatures. We will follow by showing how to mount the attack and see how practical it really is according to our own experiments. In section 6 we will talk about related attacks and known counter-measures. Finally we'll end the paper with a short conclusion in section 7. In appendix A you will find the C code of the timing part of the attack, in appendix B you will find the Sage code of the lattice part of the attack. Both can be found up to date on \href{https://github.com/mimoo/timing_attack_ecdsa_tls}{the public repository associated to this paper}.
+In this paper we will show how these ``Side-Channels'' can sometimes provide enough information to break a cryptosystem. In particular, how the knowledge of a few bits of dozens of nonces revealed by a timing attack can break DSA and ECDSA in applications like OpenSSL. In section 2 we will introduce Cryptographic Signatures with brief explanations on DSA and its Elliptic Curve variant ECDSA. In section 3 we will talk a bit about lattices and the interesting problems they carry, along with the tools past research has invented to solve them (or rather approximate them). In section 4 we will see how Howgrave-Graham and Smart attacked DSA with algorithms based on lattices. We will explain in details a special case of their attack: when the nonces are short, and will talk about improvements by using the Embedding Strategy. In section 5 we will start talking about a timing attack found by B.B.Brumley and N.Tuveri that recovers an OpenSSL server's private key by obtaining some information about the length of the nonces of its ECDSA signatures. We will follow by showing how to mount the attack and see how practical it really is according to our own experiments. In section 6 we will talk about related attacks and known counter-measures. Finally we will end the paper with a short conclusion in section 7. In appendix A you will find the C code of the timing part of the attack, in appendix B you will find the Sage code of the lattice part of the attack. Both can be found up to date on \href{https://github.com/mimoo/timing_attack_ecdsa_tls}{the public repository associated to this paper}.
 
 \section{Cryptographic Signatures}\label{rsa}
 
 
-One of the greatest tool cryptography has provided us in the modern era is the ability to digitally sign things. Like a real signature is ``supposed'' to attest you wrote that check, a digital signature over a digital object can attest it came from you. Actually a digital signature does much more: it \textbf{authenticate} the object (it came from you), it provides \textbf{integrity} (it hasn't been modified) and also \textbf{non-repudiation} (you can't lie afterward about not having signed anything!).
+One of the greatest tool cryptography has provided us in the modern era is the ability to digitally sign things. Like a real signature is ``supposed'' to attest you wrote that check, a digital signature over a digital object can attest it came from you. Actually a digital signature does much more: it \textbf{authenticate} the object (it came from you), it provides \textbf{integrity} (it has not been modified) and also \textbf{non-repudiation} (you cannot lie afterward about not having signed anything!).
 
 \subsection{DSA}\label{dsa}
 
-The Digital Signature Algorithm, commonly referred as DSA or even DSS (the same way Rijandel is referred to as AES), is one of the most used signature algorithm in the world. It is a variant of Schnorr's Signature\cite{schnorr} published by the NSA to circumvent the first one's patents. Based on Non-Interactive Zero-Knowledge Protocols and Public-Key Cryptography, it is pretty simple to state. You own two keys: a public key and a private key. You sign with your private key and people can verify your signature thanks to your public key which is... public.
+The Digital Signature Algorithm, commonly referred as DSA or even DSS (the same way Rijandel is referred to as AES), is one of the most used signature algorithms in the world. It is a variant of Schnorr's Signature\cite{schnorr} published by the NSA to circumvent the first one's patents. Based on Non-Interactive Zero-Knowledge Protocols and Public-Key Cryptography, it is pretty simple to state. You own two keys: a public key and a private key. You sign with your private key and people can verify your signature thanks to your public key which is... public.
 
 \begin{align*}
 &x \text{ the private key} \\
 &(p, q, g, y) \text{ the public key with } y = g^x \pmod{p}
 \end{align*}
 
-We won't go into the details of how to generate a pair of private and public key. A signature over a message consists of two integers $r$ and $s$ that you can compute with a hash of the message, your private key, the public key and an \textbf{ephemeral private key} $k$.
+We will not go into the details of how to generate a pair of private and public key. A signature over a message consists of two integers $r$ and $s$ that you can compute with a hash of the message, your private key, the public key and an \textbf{ephemeral private key} $k$.
 
 \begin{align*}
 &r = (g^k \pmod{p}) \pmod{q}\\
@@ -101,7 +104,7 @@ We won't go into the details of how to generate a pair of private and public key
 
 Every time you want to sign something you must generate a new ephemeral private key $k$ in addition to your long term private key $x$. This is why we also call it a nonce as it is a \textbf{n}umber that has to be used only \textbf{once}.
 
-The verification part is pretty straight forward, take the elements from the signature and from the public key and calculate:
+The verification part is pretty straight forward: take the elements from the signature and from the public key and compute:
 
 $$ (g^{H(m) (s^{-1} \pmod{q})} \cdot g^{r (s^{-1} \pmod{q}) \pmod{q}} \pmod{p}) \pmod{q} $$
 
@@ -119,7 +122,7 @@ $$ y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6 $$
 
 That set of points forms an abelian group along with two operations (addition and multiplication) which are defined following a \textit{chord-and-tangent rule}. The multiplication of a scalar $k$ with a point $P$ from the curve is usually written as $Q = [k]P$. The ECDLP is stated as follow: it is computationally hard to compute $k$ if you only know $Q$ and $P$ in the above equation (and if they are big enough).
 
-The main advantage of ECDLP over DLP is that the most efficients attack on DLP (\textit{Index Calculus} attacks like the \textbf{General Number Field Sieve}) do not work for ECDLP. Keys in Elliptic Curve based algorithms are also much smaller than their conventional discrete logarithm-based counterparts, which allows for faster calculations and smaller certificates for equivalent levels of security. 
+The main advantage of ECDLP over DLP is that the most efficients attack on DLP (\textit{Index Calculus} attacks like the \textbf{General Number Field Sieve}) do not work for ECDLP. Keys in Elliptic Curve based algorithms are also much smaller than their counterparts based on conventional the Discrete Logarithm Problem, which allows for faster calculations and smaller certificates for equivalent levels of security. 
 
 ECDSA carries the same principles as DSA. The public key comprises all the public parameters of the curve of our choice and a public key $Q = [x]P$ which is a random multiple $x$ of the base point $P$  where $x$ is also the private key.
 
@@ -132,7 +135,7 @@ Pay attention to the scalar multiplication in the first part $r$ of the signatur
 
 \subsection{Security of DSA/ECDSA}\label{security_dsa_ecdsa}
 
-The security of DSA and ECDSA are often grossly reduced to the Discrete Logarithm Problem. Whereas it should be tied to every information contained in its equations.
+The security of DSA and ECDSA are often grossly reduced to the Discrete Logarithm Problem, while it should be tied to every information contained in its equations.
 
 Taking a look at the public part $(r, s)$ of an ECDSA signature:
 \begin{align*}
@@ -146,14 +149,14 @@ $$
 x = [ s k - H(m) ] \cdot r^{-1} \pmod{q}
 $$
 
-An example of a misunderstanding of this concept is the PS3 nonce \textbf{re-use} in 2010\cite{ps3} where a team of researcher reversed the nonce generation part of the PS3 signing algorithm to realize that it wasn't totally random.
+An example of a misunderstanding of this concept is the PS3 nonce \textbf{re-use} in 2010\cite{ps3} where a team of researcher reversed the nonce generation part of the PS3 signing algorithm to realize that it was not totally random.
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{ps3.png}
-\caption{The relevant slide from the Chaos Communication Congress talk revealing the vulnerability}
+\caption{The relevant slide from the \href{https://events.ccc.de/congress/2010/Fahrplan/attachments/1780_27c3_console_hacking_2010.pdf}{Chaos Communication Congress talk revealing the vulnerability}}
 \end{figure}
 
-You can see that re-using the same nonce only twice already leads to a break of the key:
+You can see that reusing the same nonce only twice already leads to a break of the key:
 
 \begin{align*}
     &\begin{cases}
@@ -168,7 +171,7 @@ Nonces being uniformly generated from huge sets make the probability of generati
 
 \section{Lattices}
 
-The attacks we will describe later both make use of the \textbf{Lenstra–Lenstra–Lovász lattice basis reduction algorithm}. Hence it is necessary for us to understand what is a lattice and why is this \textbf{LLL} algorithm so useful.\\
+The attacks we will describe later both make use of lattices and the tools they carry. Hence it is necessary for us to understand what is a lattice and what algorithms based on lattices will be useful for us.\\
 Think about Lattices like \textbf{Vector Spaces}. Imagine a simple vector space of two vectors. You can add them together, multiply them by scalars (let's say numbers of $\mathbb{R}$) and it spans a vector space.\\
 
 \begin{tikzpicture}[scale=.55]
@@ -253,7 +256,7 @@ Lattices come with their sets of hard problems, and in our interest their respec
 
 \subsection{Shortest Vector Problem}
 
-One of the most famous lattice problem thought to be hard is the \textbf{SVP} or Shortest Vector Problem. It states that given a lattice basis, you have to find the shortest non-zero vector in the lattice.
+One of the most famous lattice problems thought to be hard is the \textbf{SVP} or Shortest Vector Problem. It states that given a lattice basis, you have to find the shortest non-zero vector in the lattice.
 
 \begin{figure}[H]
   \centering
@@ -538,7 +541,7 @@ We will not dig into the internals of LLL here, see Chris Peikert's course\cite{
 
 \subsection{Babai}
 
-Babai introduced two algorithms to get an approximation of the Closest Vector Problem.\\
+In 1986, Babai introduced two algorithms\cite{babai} to get an approximation of the Closest Vector Problem.\\
 Let $L$ be a lattice in $\mathbb{R}^d$, given by a basis $B = {b_1, \hdots, b_d}$ and let $x \in \mathbb{R}^d$. Let $u$ be the nearest neighbor of $x$ in $L$. Babai's procedures bring a way to find an approximation $w$ of this vector $u$.
 
 \textbf{Rounding Off procedure:} Let $x = \sum^d_{i=1} \beta_i b_i$ and let $\alpha_i$ be the integer nearest to $\beta_i$. Set $w = \sum^d_{i=1} \alpha_i b_i$.\\
@@ -654,13 +657,13 @@ Lattices and the tools they come with have been used everywhere in crypto: build
 
 In 1982, the first efficient lattice basis reduction algorithm LLL was invented by the Lenstra brothers and Lovász\cite{lll}. More than 10 years later, in 1995, Coppersmith was publishing his theorem along with a construction using LLL that could be used to attack RSA\cite{coppersmith}.
 
-A year later, In 1996, D. Boneh and R. Venkatesan\cite{boneh-venkatesan} formulated the Hidden Number Problem and used that same algorithm to constructe a proof on Diffie Hellman and other related algorithms, which is thought by many cryptographer as one of the most positive application of lattices.
+A year later, In 1996, D. Boneh and R. Venkatesan\cite{boneh-venkatesan} formulated the \textbf{Hidden Number Problem} and used that same algorithm to construct a proof on Diffie-Hellman and other related algorithms, which is thought by many cryptographers as one of the most positive applications of lattices.
 
-The same kind of idea was independently found by \textbf{Howgrave-Graham} and \textbf{Smart} 3 years later\cite{HG-smart}, but this time used to attack DSA. Although they made use of Babai's algorithm whereas a more efficient technique called the Embedding Strategy was used in the paper by Boneh and Venkatesan.
+The same kind of idea was independently found by \textbf{Howgrave-Graham} and \textbf{Smart} three years later\cite{HG-smart}, but this time used to attack DSA. Oddly, they made use of Babai's algorithm while a more efficient technique called the Embedding Strategy was used in the paper by Boneh and Venkatesan.
 
 Following is an explanation of a special case of Howgrave-Graham and Smart's attack on DSA, that we will later use to attack ECDSA. We will then explain how to improve on it by using the Embedding Technique.
 
-\subsection{Reducing a relaxed DSA problem to a Closest Vector Problem}
+\subsection{Reducing a Relaxed DSA Problem to a Closest Vector Problem}
 
 So now imagine that \textbf{we have a number $n$ of signatures} $(r,s)$ from DSA that \textbf{all have particularly ``small'' nonces} $k_i$.\\
 Recall these are the equations we now have, for $i \in \mathbb{Z}_n$:
@@ -669,13 +672,13 @@ Recall these are the equations we now have, for $i \in \mathbb{Z}_n$:
 &s_i = k_i^{-1} ( H(m_i) + x \cdot r_i ) \pmod{q}
 \end{align*}
 
-Where $g$, $p$, $q$ are public and $H(m_i)$ can be computed as well. Here the $k_i$ are the secret nonces and $x$ the private key.
+Where $g$, $p$, $q$ are public and $H(m_i)$ can be computed as well. Here, the $k_i$ are the secret nonces, $x$ is the private key.
 
 We notice that we know another way of writing \textbf{the second equation} since we know $H(m_i)$:
 
 $$ H(m_i) = s_i k_i - x \cdot r_i \pmod{q} $$
 
-As this is an attack on the nonces we want to \textbf{get rid of the private key}. To do that we'll notice that we can use one of the equation and remove it from the others, let's say we can use the first equation:
+As this is an attack on the nonces we want to \textbf{get rid of the private key}. To do that we will notice that we can use one of the equations and remove it from the others, let's say we can use the first equation:
 
 \begin{align*}
 &H(m_0) = s_0 \cdot k_0 - x \cdot r_0 \pmod{q}\\
@@ -726,9 +729,9 @@ In other words, we need to find a vector from the lattice spanned by the columns
 
 \subsection{The Embedding Strategy}
 
-While Howgrave-Graham and Smart talk about using the Babai procedure to solve the CVP, our tests show that it is not efficient enough. The well known Embedding Strategy allows to heuristically reduce the CVP problem to the SVP problem and thus directly make use of a lattice basis reduction algorithm to solve the problem (like LLL).
+While Howgrave-Graham and Smart talk about using the Babai procedure to solve the CVP, our tests show that it is not efficient enough. The well-known ``Embedding Strategy'' allows to heuristically reduce the CVP problem to the SVP problem and thus directly make use of a lattice basis reduction algorithm to solve the problem (like LLL).
 
-This is how it works: we add our non-lattice vector $u$ in the basis, so that it is now part of the lattice. Remember, we are looking for a very close lattice vector $v$ to our non-lattice vector $u$, since both these vectors are in the lattice we hope that our reduction algorithm will find $u - v$ or $v - u$ which is in our lattice and should be really small, the heuristic also says to increase the lattice's dimension and to only give a coefficient of the new dimension to our new basis vector $u$. This way we can test if our solution has used our vector $u$ by checking if the smallest vector of our reduced basis has that (negative) value as extra dimension.
+This is how it works: we add our non-lattice vector $u$ in the basis, so that it is now part of the lattice. Remember, we are looking for a very close lattice vector $v$ to our non-lattice vector $u$, since both these vectors are in the lattice, we hope that our reduction algorithm will find $u - v$ or $v - u$ which is in our lattice and should be really small, the heuristic also says to increase the lattice's dimension and to only give a coefficient of the new dimension to our new basis vector $u$. This way we can test if our solution has used our vector $u$ by checking if the smallest vector of our reduced basis has that (negative) value as extra dimension.
 
 Our previous problem is now reduced to find a small basis vector in the lattice spanned by the columns of the matrix:
 
@@ -742,24 +745,24 @@ A_{n-1} & & & q & B_{n-1}\\
 \end{pmatrix}
 $$
 
-Here the new dimension's coefficient, that we'll call the trick, is $1$. To balance its value with the other values of the wanted solution, we'll use $q / 2{l+1}$ instead of $1$ where $l$ is the number of Most Significant Bits known to be zero in the nonces.
+Here the new dimension's coefficient, that we will call the trick, is $1$. To balance its value with the other values of the wanted solution, we will use $q / 2{l+1}$ instead of $1$ where $l$ is the number of Most Significant Bits known to be zero in the nonces.
 
 
 \section{A Timing Attack in OpenSSL}
 
 \subsection{Side-Channel Attacks}
 
-We've seen that using a non-cryptographically secure PRNG (Pseudo Random Number Generator) or making mistakes implementing the generation of the nonce break DSA and ECDSA. But more subtle than that, We now know that the slightest information on the nonces of a few signatures will allow us to break the same secure system.
+We have seen that using a non-cryptographically secure Pseudo Random Number Generator (PRNG) or making mistakes implementing the generation of the nonce break DSA and ECDSA. But more subtle than that, we now know that the slightest information on the nonces of a few signatures will allow us to break the same secure system.
 
 Side-Channel attacks are a particular range of attacks that use information acquired through non-obvious channels of use. For example by measuring the electromagnetic radiations, the power consumed, the vibrations, the acoustic or even the time taken by an algorithm to perform an operation. These measurements often provides critical information about the private elements of cryptosystems.
 
-In this paper we will focus on Timing Attacks, which are one of the only viable Side Channels Attacks to perform on a remote target. It was first introduced by Kocher in 1996\cite{Kocher}, who showed how to break Diffie-Hellamn, RSA and DSA with the time the algorithms took to perform the operations involving the secret elements of their system.
+In this paper we will focus on timing attacks, which are one of the only viable Side Channels Attacks to perform on a remote target. It was first introduced by Kocher in 1996\cite{Kocher}, who showed how to break Diffie-Hellamn, RSA and DSA with the time the algorithms took to perform the operations involving the secret elements of their system.
 
-\subsection{The timing Attack}
+\subsection{The Timing Attack}
 
-\textbf{B.B.Brumley} and \textbf{N.Tuveri} found out\cite{brumley-tuveri} that a part of OpenSSL's ECDSA code contained a Timing Attack:
+\textbf{B.B.Brumley} and \textbf{N.Tuveri} found out\cite{brumley-tuveri} that a part of OpenSSL's ECDSA code contained a timing attack:
 
-In ECDSA, to counter Timing Attacks one of the state-of-the-art technique is to use a \textbf{Constant-Time} algorithm. For binary curves, in OpenSSL, the \textbf{Montgomery Ladder} algorithm is used during the point multiplication of $r = [k] P$. Unfortunately, an optimization was present right before the algorithm:
+In ECDSA, to counter timing attacks one of the state-of-the-art techniques is to use a \textbf{Constant-Time} algorithm. For binary curves, in OpenSSL, the \textbf{Montgomery Ladder} algorithm is used during the point multiplication of $r = [k] P$. Unfortunately, an optimization was present right before the algorithm.
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{vuln.png}
@@ -789,19 +792,19 @@ As you can see the server answers with a DSA/ECDSA signature, which is computed 
 \caption{The excerpt of \href{https://tools.ietf.org/html/rfc4492#section-5.4}{RFC 4492} talking about the signature part of an ephemeral handshake}
 \end{figure}
 
-The attack will consist of sending several ServerHello and collecting the signatures while timing the response time until enough small nonces are captured.
+The attack will consist of sending several ServerHello messages and collecting the signatures while timing the response time until enough small nonces are captured.
 
-\subsection{Measuring a Timing Attacks}
+\subsection{Measuring a Timing Attack}
 
 Since we are doing a remote attack, we cannot time the exact computation of the signature, what we time instead is the \textbf{round trip} time, defined by Crosby et al\cite{crosby} as such:
 
 $$ \text{response\_time } = \text{ processing\_time } + \text{ propagation\_time } + \text{ jitter} $$
 
-Here the \textit{processing\_time} is the difference between the target emitting its response and the target reading our helloClient. The nonce multiplication operation we want to time is in there and should be the only relevant computation in the overall timing of that part (i.e. all other server procedures' time are negligible compared to that multiplication operation). The \textit{propagation\_time} is the average time spent by the data in transit (i.e. between the attacker and the target). Finally, the \textit{jitter} is the uncontrollable noise/latency that can happen for many diverse reasons. The jitter is often the core problem of a remote Timing Attack.\\
+Here the \textit{processing\_time} is the difference between the target emitting its response and the target reading our helloClient. The nonce multiplication operation we want to time is in there and should be the only relevant computation in the overall timing of that part (i.e. all other server procedures' time are negligible compared to that multiplication operation). The \textit{propagation\_time} is the average time spent by the data in transit (i.e. between the attacker and the target). Finally, the \textit{jitter} is the uncontrollable noise/latency that can happen for many diverse reasons. The jitter is often the core problem of a remote timing attack.\\
 
-To measure the timing of something, with extreme precision, we will rely on the \textbf{rdtscp} assembly instruction that returns the number of cycles the CPU has performed since boot. Contrary to rdtsc this operation doesn't need cpuid to be precise since rdtscp flushes the pipeline intrinsically. You only "need" to use cpuid and rdtsc if your processor does not support the more recent rdtscp, both requires a Pentium CPU.
+To measure the timing of something, with extreme precision, we will rely on the \textbf{rdtscp} assembly instruction that returns the number of cycles the CPU has performed since boot. Contrary to rdtsc this operation does not need cpuid to be precise since rdtscp flushes the pipeline intrinsically. You only "need" to use cpuid and rdtsc if your processor does not support the more recent rdtscp, both requires a Pentium CPU.
 
-\subsection{The setup}
+\subsection{The Setup}
 
 We modified \href{ftp://ftp.openssl.org/source/old/1.0.1/openssl-1.0.1j.tar.gz}{openssl-1.0.1j} to re-introduce the vulnerability by reverting the \href{https://git.openssl.org/?p=openssl.git;a=blobdiff;f=CHANGES;h=1633d27975c91f122c4e9266b2c3cf4e56e8ffbf;hp=22749650b701d91cc43af24a226369116c2a46f8;hb=992bdde62d2eea57bb85935a0c1a0ef0ca59b3da;hpb=bbcf3a9b300bc8109bb306a53f6f3445ba02e8e9}{patch from B.B.Brumley and N.Tuveri in OpenSSL 1.0.1j}
 
@@ -832,7 +835,7 @@ And we obtain the following certificate:
 \end{figure}
 
 
-\subsection{From the server (the target)}
+\subsection{From the Server (the Target)}
 
 We first modified OpenSSL to store the nonces it signed and how long it took to sign them. We then queried that server many times to make it use the ECDSA nonce multiplication operation. It took us 6 to 7 seconds to fetch 1,000 signatures and around a minute to fetch 10,000 signatures from the server.
 
@@ -896,14 +899,14 @@ length & amount \\
 \caption{Statistics on nonces generated for 10,000 signatures}
 \end{figure}
 
-We will discuss in the following sections how many nonces we need to perform the Lattice Attack.
+We will discuss in the following sections how many nonces we need to perform the lattice attack.
 
 
 \subsection{From a Remote Machine}
 
-We tried getting the same kind of results from a different server located in the same local network. But as to simplify testing and avoid parsing the responses We modified the OpenSSL server as to store the truncated hashes and the signatures server side.
+We tried getting the same kind of results from a different server located in the same local network. But as to simplify testing and avoid parsing the responses, we modified the OpenSSL server as to store the truncated hashes and the signatures server side.
 
-The source code of the client is in the Appendix A, it always sends the same \textit{HelloClient} packet (and the same \textit{client.Random}). The client counts the CPU cycles of the response time. If the attack is performed from multiple machines with different CPU frequencies then we would have to convert the CPU cycles into a time unit before gathering the data together.
+The source code of the client is in Appendix A, it always sends the same \textit{HelloClient} packet (and the same \textit{client.Random}). The client counts the CPU cycles of the response time. If the attack is performed from multiple machines with different CPU frequencies then we would have to convert the CPU cycles into a time unit before gathering the data together.
 
 Several ways of increasing the accuracy of these measurements were researched. The easiest thing is to configure the client machine that is in our control. Decreasing the jitter is often impossible since it happens out of our reach, getting close to the server seems to be the best way to do it, although our results are still inconclusive in a local network test environment as you will see later.
 
@@ -916,7 +919,7 @@ After collecting all the signatures we get rid of the 10 first samples and their
 \caption{the y axis represents the bitsize of the nonces, the x axis the time the OpenSSL server took to respond. They are obviously not correlated}
 \end{figure}
 
-Retrieving 500 tuples (signatures and truncated digests) that took the smallest amount of time from 100,000 signatures, we can see that we don't have enough nonces of small sizes in our set (see next section on the Lattice Attack for numbers), plus the amount of false-positive is extremely high. We then try to get the smallest time upper-bound that would contain enough small nonces. We arrive at approximately 5,000: the fastest 5,000 signatures of our 100,000 signatures set should contain enough small nonces to do our Lattice Attack. And as we can see the amount of false positive is still extremely high.
+Retrieving 500 tuples (signatures and truncated digests) that took the smallest amount of time from 100,000 signatures, we can see that we do not have enough nonces of small sizes in our set (see next section on the lattice attack for numbers), plus the amount of false-positive is extremely high. We then try to get the smallest time upper-bound that would contain enough small nonces. We arrive at approximately 5,000: the fastest 5,000 signatures of our 100,000 signatures set should contain enough small nonces to do our lattice attack. And as we can see in figure 17 and in the following statistics, the amount of false positive is still extremely high.
 
 \begin{table}[H]
 \parbox{.45\linewidth}{
@@ -967,15 +970,15 @@ length&amount&percentage\\
 }
 \end{table}
 
-To eliminate the false positives, the idea here is to select a random subset of let's say 42 tuples (if we are aiming for nonces smaller than 156 bits) and do a Lattice Attack, if we don't find anything build another random subset of the same size. Rinse and repeat. This leads to $1.36 \times 10^{104}$ different combinations, this is impossible and this is because our timing measurements are not correlated to the bitsize of the nonces. With better measurements this attack would indeed be devastating.
+To eliminate the false positives, the idea here is to select a random subset of let's say 42 tuples (if we are aiming for nonces smaller than 156 bits) and do a lattice attack, if we do not find anything build another random subset of the same size. Rinse and repeat. This leads to $1.36 \times 10^{104}$ different combinations, this is impossible and this is because our timing measurements are not correlated to the bitsize of the nonces. With better measurements this attack would indeed be devastating.
 
 \subsection{The Lattice Attack}
 
-Obviously our attack is not gonna work from a remote machine because our timings are not correlated with the length of the nonces. We can try a theoretic attack by selecting the nonces by hand.
+Obviously our attack is not going to work from a remote machine because our timings are not correlated with the length of the nonces. We can try a theoretic attack by selecting the nonces by hand.
 
-The code for the Lattice Attack can be found in Appendix B, it uses \textbf{Sage} and the embedding strategy talked about earlier.
+The code for the lattice attack can be found in Appendix B, it uses \textbf{Sage} and the embedding strategy talked about earlier.
 
-In our experiments, we can't solve for nonces greater than 157 bits (6 bits known). LLL also often provides worse results than \textbf{BKZ}. BKZ is another algorithm that approximate a solution for the SVP, it uses LLL but ends up with a smaller basis most of the time.
+In our experiments, we cannot solve for nonces greater than 157 bits (6 bits known). LLL also often provides worse results than \textbf{BKZ}. BKZ is another algorithm that approximate a solution for the SVP, it uses LLL but ends up with a smaller basis most of the time.
 
 When only 6 bits are known, BKZ needs a minimum of 50 tuples (signatures and truncated hashes) to find the nonces, LLL needs 78. For nonces of 156 bits (7 bits are known), LLL starts needs a minimum of 42 tuples to find the values of the nonces whereas BKZ only needs 38. For nonces of bitsize 155, BKZ needs 30 tuples and LLL needs 31.
 
@@ -984,13 +987,13 @@ When only 6 bits are known, BKZ needs a minimum of 50 tuples (signatures and tru
 \caption{The number of tuples needed by each algorithms (BKZ and LLL) according to the size of the nonces they can find}
 \end{figure}
 
-As seen in that kind of attacks in the literature, we use $q / 2^{l + 1}$ (with $q$ the modulo and $l$ the MSB (Most Significant Bits) known) for the trick in the embedding strategy. Using other values for the trick often provides worse results (more tuples are needed, or no solutions can be found), and if we don't use the extra dimension we can't seem to find correct solutions.
+As seen in that kind of attacks in the literature, we use $q / 2^{l + 1}$ (with $q$ the modulo and $l$ the MSB (Most Significant Bits) known) for the trick in the embedding strategy. Using other values for the trick often provides worse results (more tuples are needed, or no solutions can be found), and if we do not use the extra dimension we cannot seem to find correct solutions.
 
 \section{Countermeasures}
 
-These kind of ``relaxed'' attacks on DSA and ECDSA are even more problematic on smart-cards, embedded devices and other cryptographic devices that can leak way more information through tons of other Side-Channel analysis. But to attack a remote target, Timing Attack is still one of the only reliable way (along with the leak of information different error messages can give away). A relaxed remote attack model where the attacker shares the same machine as the victim can use such techniques as well. Some research have been done in Hypervisors where you could access information about neighbor VM's memory use\cite{flushreload}\cite{flushreloadecdsa}\cite{flushreloadopenssl}. The questions of ``Are there other kinds of side-channel attacks on remote targets?'' and ``Can we get more accurate timings on the network?'' are still open. As for the way of preventing Timing Attacks, a lot of counter measures already exist.
+These kind of ``relaxed'' attacks on DSA and ECDSA are even more problematic on smart-cards, embedded devices and other cryptographic devices that can leak way more information through tons of other Side-Channel analysis. But to attack a remote target, timing attack is still one of the only reliable ways (along with the leak of information different error messages can give away). A relaxed remote attack model where the attacker shares the same machine as the victim can use such techniques as well. Some research have been done in Hypervisors where you could access information about neighbor VM's memory use\cite{flushreload}\cite{flushreloadecdsa}\cite{flushreloadopenssl}. The questions of ``Are there other kinds of side-channel attacks on remote targets?'' and ``Can we get more accurate timings on the network?'' are still open. As for the way of preventing timing attacks, a lot of countermeasures already exist.
 
-\subsection{The OpenSSL patch}
+\subsection{The OpenSSL Patch}
 
 Let's first take a look at the fix proposed by B.B.Brumley and N.Tuveri following their finding.
 
@@ -999,17 +1002,17 @@ Let's first take a look at the fix proposed by B.B.Brumley and N.Tuveri followin
 \caption{the patch of B.B.Brumley and N.Tuveri in \textit{crypto/ecdsa/ecs\_ossl.c}}
 \end{figure}
 
-The attack we presented works because some of the nonces are short enough. A solution could be to \textbf{make them all long enough} so that the underlying Lattice Attack could not happen. This is what B.B.Brumley and N.Tuveri proposed, and is facilitated by the properties of the scalar multiplication in Elliptic Curve Cryptography:
+The attack we presented works because some of the nonces are short enough. A solution could be to \textbf{make them all long enough} so that the underlying lattice attack could not happen. This is what B.B.Brumley and N.Tuveri proposed, and is facilitated by the properties of the scalar multiplication in Elliptic Curve Cryptography:
 
 $$ [k]P = [k + r]P \text{ if } r \text{ is a multiple of the group order} $$
 
-As we'll see later, this property is often used as \textbf{Scalar Blinding} against Side-Channel Attacks. But rather than using a random multiple of the group order which would make extremly large nonces, we can just add the group order to the nonce once. If it's not long enough, the second test will add the group order once again. This will be enough to avoid short nonces all of the time.
+As we will see later, this property is often used as \textbf{scalar blinding} against Side-Channel Attacks. But rather than using a random multiple of the group order which would make extremly large nonces, we can just add the group order to the nonce once. If it's not long enough, the second test will add the group order once again. This will be enough to avoid short nonces all of the time.
 
 \subsection{Blinding}
 
-In 1996, Kocher\cite{Kocher} introduced a Timing Attack on Diffie-Hellman, RSA and DSA, along with the relevant counter measure: \textbf{blinding}. Either a Base Blinding, or Exponent Blinding (although it was shown that under certain conditions exponent blinding alone was not sufficient\cite{schindler}). Both techniques allow the operation to be computed on something unrelated to a malicious user's controlled input\\
+In 1996, Kocher\cite{Kocher} introduced a timing attack on Diffie-Hellman, RSA and DSA, revant countermeasure: \textbf{blinding}. He explained two ways of using it, either as a base blinding, or as an exponent blinding (although it was shown that under certain conditions exponent blinding alone was not sufficient\cite{schindler}). Both techniques allow the operation to be computed on something unrelated to a malicious user's controlled input.\\
 
-Following is the \textbf{Base Blinding} technique applied during a RSA decryption phase with $m = c^d \mod{N}$ where $m$ is the message, $c$ is the ciphertext, $d$ is the private exponent and $N$ the modulus:
+Below is the \textbf{base blinding} technique applied during a RSA decryption phase with $m = c^d \mod{N}$ where $m$ is the message, $c$ is the ciphertext, $d$ is the private exponent and $N$ the modulus:
 
 \begin{enumerate}
 \item{$r  \xleftarrow[]{\$} \mathbb{Z}_N^{\ast}$}
@@ -1017,7 +1020,7 @@ Following is the \textbf{Base Blinding} technique applied during a RSA decryptio
 \item{$m = m' \cdot r^{-1} \pmod{N}$}
 \end{enumerate}
 
-To harden Base Blinding, \textbf{Exponent Blinding} can be added. Instead of randomizing the ciphertext, the idea is to randomize the private exponent by adding it to a multiple of $\varphi(N)$:
+To harden base blinding, \textbf{exponent blinding} can be added. Instead of randomizing the ciphertext, the idea is to randomize the private exponent by adding it to a multiple of $\varphi(N)$:
 
 \begin{enumerate}
     \item{$k \xleftarrow[]{\$} \mathbb{Z}$}
@@ -1025,9 +1028,9 @@ To harden Base Blinding, \textbf{Exponent Blinding} can be added. Instead of ran
     \item{$m = c^{d'} \pmod{N}$}
 \end{enumerate}
 
-In ECC based cryptosystems other forms of Blinding can be used, we'll first re-introduce Scalar Blinding. Here in $Q = [d]P$ we have $P=(x,y)$:
+In cryptosystems based on Elliptic Curve Cryptography, other forms of blinding can be used, we will first re-introduce scalar blinding. Here in $Q = [d]P$ we have $P=(x,y)$:
 
-\textbf{Scalar Blinding} is the exponent blinding of RSA, in $Q = [d]P$ you hide the private key by adding it to a multiple of the group order.
+\textbf{Scalar blinding} is the exponent blinding of RSA, in $Q = [d]P$ you hide the private key by adding it to a multiple of the group order.
 
 \begin{enumerate}
 \item{$k \xleftarrow[]{\$} \mathbb{Z}$}
@@ -1035,7 +1038,7 @@ In ECC based cryptosystems other forms of Blinding can be used, we'll first re-i
 \item{$Q = [d']P$}
 \end{enumerate}
 
-\textbf{Coordinate Blinding} is another form of Blinding aimed to express calculations in a different projective coordinate every time:
+\textbf{Coordinate blinding} is another form of blinding aimed to express calculations in a different projective coordinate every time:
 
 \begin{enumerate}
 \item{$k \xleftarrow[]{\$} \mathbb{Z}$}
@@ -1044,7 +1047,7 @@ In ECC based cryptosystems other forms of Blinding can be used, we'll first re-i
 \item{Output $[d]P$}
 \end{enumerate}
 
-\textbf{Point Blinding} is the Base Blinding of ECC, in $Q = [d]P$ you hide the base point $P$ by adding it to a random point:
+\textbf{Point blinding} is the base blinding of ECC, in $Q = [d]P$ you hide the base point $P$ by adding it to a random point:
 
 \begin{enumerate}
 \item{$S \xleftarrow[]{\$} E(\mathbb{F}_q)$}
@@ -1055,9 +1058,9 @@ In ECC based cryptosystems other forms of Blinding can be used, we'll first re-i
 
 \subsection{Constant-Time}
 
-Another popular way of preventing against Timing Attacks is to use Constant-Time algorithms like we've seen with OpenSSL's ECDSA implementation for binary curves. It is also often used for comparing MACs or Signatures together without leaking a byte by byte information by failing as soon as a byte is not the same.\\
+Another popular way of preventing against timing attacks is to use Constant-Time algorithms like we have seen with OpenSSL's ECDSA implementation for binary curves. It is also often used for comparing MACs or Signatures together without leaking information on the bytes of the correct string, by failing as soon as a byte is not the same.\\
 
-Constant Time exponentiation in modular arithmetic based cryptosystems like DH are done with \textbf{Square-and-Multiply-Always}, which is a modified Square-and-Multiply algorithm that does both operations every time. Here we are decrypting a ciphertext $c$ with the operation $c^d \pmod{N}$ where $d$ is the private key, $|d|$ its binary length and $d_i$ the number at the i-th position of its binary representation.
+Constant-Time exponentiation in modular arithmetic based cryptosystems like DH are done with \textbf{Square-and-Multiply-Always}, which is a modified Square-and-Multiply algorithm that does both operations every time. Here we are decrypting a ciphertext $c$ with the operation $c^d \pmod{N}$ where $d$ is the private key, $|d|$ its binary length and $d_i$ the number at the i-th position of its binary representation.
 
 \DontPrintSemicolon
 \begin{algorithm}[H]
@@ -1074,7 +1077,7 @@ Constant Time exponentiation in modular arithmetic based cryptosystems like DH a
     return $s$\;
 \end{algorithm}
 
-Constant Time in ECC, usually applied on multiplication operations, are done with the \textbf{Double-and-Add-Always} or the \textbf{Montgomery Ladder} algorithm like in the OpenSSL's ECDSA implementation for binary curves. Both are exactly the same idea as the Square-and-Multiply-Always were dummy operations are made.\\
+Constant-Time in ECC, usually applied on multiplication operations, are done with the \textbf{Double-and-Add-Always} or the \textbf{Montgomery Ladder} algorithm like in the OpenSSL's ECDSA implementation for binary curves. Both are exactly the same idea as the Square-and-Multiply-Always were dummy operations are made.\\
 Here is the Montgomery Ladder algorithm:
 
 \begin{algorithm}[H]
@@ -1095,19 +1098,19 @@ Here is the Montgomery Ladder algorithm:
 
 \subsection{Others}
 
-We'll briefly list the other alternatives to the previous two popular ones:\\
+We will briefly talk about the other alternatives to the previous two popular ones.\\
 
 The \textbf{Unified Formula} technique intends to make point addition and point doubling use the same sequence of field operations. It was first invented by Brier and Joye in 2002\cite{unified} and is aiming to cancel the problems brought by the difference of operations occurring in $P + Q$ when $P = Q$.\\
 
-Another relatively new technique is the \textbf{Padding-Time} technique, which was introduced in 2015 by Boneh, Braun and Jana. The idea is to always take the same amount of time by waiting before doing anything else if an operation didn't take as much time as its precedents.\\
+Another relatively new technique is the \textbf{Padding-Time} technique, which was introduced in 2015 by Boneh, Braun and Jana. The idea is to always take the same amount of time by waiting before doing anything else if an operation did not take as much time as its precedents.\\
 
 A totally different take on this problem is to get rid of the randomness of the nonces by \textbf{deterministically deriving the nonces from the message and some secret data}. There are two main propositions in this field: the D.J.Bernstein's one with EdDSA\cite{eddsa}, which completely changes ECDSA (uses different curves), and Thomas Pornin's\cite{pornin} one which generate the nonces with HMAC in the ECDSA.
 
 \section{Conclusion}
 
-We've seen in our own experiments that Remote Timing Attacks are \textbf{far from being practical}, even in the same local network. It already takes advanced measures to attain high precision of timings on the attacker machine, and the fact that we can't control the jitter, the propagation time and the overall server's responsiveness make things extremely difficult for us.\\
+We have seen in our own experiments that Remote timing attacks are \textbf{far from being practical}, even in the same local network. It already takes advanced measures to attain high precision of timings on the attacker machine, and the fact that we cannot control the jitter, the propagation time and the overall server's responsiveness make things extremely difficult for us.\\
 
-It's important to notice that the Lattice Attack should still have \textbf{room for improvement} and more resources would make the Timing Attack more efficient as well. The detailed and respected description of the TLS protocol would make such a potentially efficient attack particularly easy to perform against any TLS framework/library having such vulnerability.\\ \href{http://blog.cryptographyengineering.com/2012/03/surviving-bad-rng.html}{Some cryptographers} have already advised not to use ECDSA to cryptographically sign objects. The topic is currently a hot one in the \href{http://www.ietf.org/mail-archive/web/cfrg/current/maillist.html}{CFRG mailing list} as what new Signature scheme should become the standard in the years to come.
+It's important to notice that the lattice attack should still have \textbf{room for improvement} and more resources would make the timing attack more efficient as well. The detailed and respected description of the TLS protocol would make such a potentially efficient attack particularly easy to perform against any TLS framework/library having such vulnerability.\\ \href{http://blog.cryptographyengineering.com/2012/03/surviving-bad-rng.html}{Some cryptographers} have already advised not to use ECDSA to cryptographically sign objects. The topic is currently a hot one in the \href{http://www.ietf.org/mail-archive/web/cfrg/current/maillist.html}{CFRG mailing list} as what new Signature scheme should become the standard in the years to come.
 
 \newpage
 
@@ -1124,6 +1127,8 @@ It's important to notice that the Lattice Attack should still have \textbf{room 
 \bibitem{HG-smart} N.A.Howgrave-Graham and N.P.Smart {\em Lattice Attacks on DSA}
 
 \bibitem{dualec} Daniel J. Bernstein, Tanja Lange, and Ruben NiederhagenDual {\em EC: A Standardized Back Door}
+
+\bibitem{babai} László Babai {\em On Lovász' lattice reduction and the nearest lattice point problem}
 
 \bibitem{crosby} Scott A. Crosby, Dan S. Wallach, and Rudolf H. Riedi {\em Opportunities and Limits of Remote Timing Attacks}
 
