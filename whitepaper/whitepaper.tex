@@ -186,10 +186,10 @@ Think about Lattices like \textbf{Vector Spaces}. Imagine a simple vector space 
 
 \draw [thick,black] [->] (11,5) -- (12,5);
 
-\draw [lightgray] [<->] (13,5) -- (23,5);
-\draw [lightgray] [<->] (18,10) -- (18,0);
 %\path [fill=purple] (18,5) to (20.5,10) to (23,10) to (18,5);
-\path [fill=purple] (15.5,0) to (20.5,10) to (23,10) to (13,0);
+\path [fill=purple] (13,0) to (23,0) to (23,10) to (13,10);
+\draw [white,thick] [<->] (13,5) -- (23,5);
+\draw [white,thick] [<->] (18,10) -- (18,0);
 \end{tikzpicture}\\
 
 Now imagine that our vector space's \textbf{scalars are the integers}, taken in $\mathbb{Z}$. The space spanned by the vectors is now made out of points. It's \textbf{discrete}. Meaning that for any point of this lattice there exists a ball centered around that point of radius different from zero that contains only that point. Nothing else.\\
