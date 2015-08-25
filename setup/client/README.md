@@ -77,6 +77,10 @@ from https://access.redhat.com/articles/65410
 
 ## Optimizations already made
 
+### CPU priority
+
+Use `nice` to set the CPU priority to `20`.
+
 ### CPU affinity
 
 Only use one CPU for your app. If you are using the `run_client.sh` utility this is already done for you. But you can modify it to use another CPU (0 by default)
