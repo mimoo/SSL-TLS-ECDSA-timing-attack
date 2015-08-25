@@ -88,7 +88,7 @@ In this paper we will show how these ``Side-Channels'' can sometimes provide eno
 \section{Cryptographic Signatures}\label{rsa}
 
 
-One of the greatest tool cryptography has provided us in the modern era is the ability to digitally sign things. Like a real signature is ``supposed'' to attest you wrote that check, a digital signature over a digital object can attest it came from you. Actually a digital signature does much more: it \textbf{authenticate} the object (it came from you), it provides \textbf{integrity} (it has not been modified) and also \textbf{non-repudiation} (you cannot lie afterward about not having signed anything!).
+One of the greatest tools cryptography has provided us in the modern era is the ability to digitally sign things. Like a real signature is ``supposed'' to attest you wrote that check, a digital signature over a digital object can attest it came from you. Actually a digital signature does much more: it \textbf{authenticate} the object (it came from you), it provides \textbf{integrity} (it has not been modified) and also \textbf{non-repudiation} (you cannot lie afterward about not having signed anything!).
 
 \subsection{DSA}\label{dsa}
 
@@ -1071,7 +1071,7 @@ As seen in that kind of attacks in the literature, we use $q / 2^{l + 1}$ (with 
 
 \section{Countermeasures}
 
-These kind of ``relaxed'' attacks on DSA and ECDSA are even more problematic on smart-cards, embedded devices and other cryptographic devices that can leak way more information through tons of other Side-Channel analysis. But to attack a remote target, timing attack is still one of the only reliable ways (along with the leak of information different error messages can give away). A relaxed remote attack model where the attacker shares the same machine as the victim can use such techniques as well. Some research have been done in Hypervisors where you could access information about neighbor VM's memory use\cite{flushreload}\cite{flushreloadecdsa}\cite{flushreloadopenssl}. The questions of ``Are there other kinds of side-channel attacks on remote targets?'' and ``Can we get more accurate timings on the network?'' are still open. As for the way of preventing timing attacks, a lot of countermeasures already exist.
+These kind of ``relaxed'' attacks on DSA and ECDSA are even more problematic on smart-cards, embedded devices and other cryptographic devices that can leak way more information through tons of other Side-Channel analysis. But to attack a remote target, timing attack is still one of the only reliable ways (along with the leak of information different error messages can give away). A relaxed remote attack model where the attacker shares the same machine as the victim can use such techniques as well. Some research has been done in Hypervisors where you can access information about neighbor VM's memory use\cite{flushreload}\cite{flushreloadecdsa}\cite{flushreloadopenssl}. The questions of ``Are there other kinds of side-channel attacks on remote targets?'' and ``Can we get more accurate timings on the network?'' are still open. As for the way of preventing timing attacks, a lot of countermeasures already exist.
 
 \subsection{The OpenSSL Patch}
 
