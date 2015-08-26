@@ -25,9 +25,10 @@ If you know more about how to collect extremely accurate timing samples on a rem
 
 ## To Do/Try
 
-* Time with `SO_TIMESTAMPING` on raw sockets. Use a NIC that allows for hardware TCP timestamping.
+* Time with `SO_TIMESTAMPING` on raw sockets. Use a NIC that allows for hardware TCP timestamping. Also try to get nanoseconds results. See [timestamping.c](https://www.kernel.org/doc/Documentation/networking/timestamping/timestamping.c)
+* Look at [what Paul McMillan does](https://github.com/PaulMcMillan/2014_ekoparty), basically the same thing but he uses tcpdump and parses the pcap instead. I think it's less clean.
 * Find other ways to optimize the network card ([Tuning 10Gb network cards on Linux by Breno Henrique Leitao, IBM](https://wiki.chipp.ch/twiki/pub/CmsTier3/NodeTypeFileServerHPDL380G7/ols2009-pages-169-1842.pdf)).
-* Time UDP packet instead (and target DTLS).
-* Look at Nguyen way's of attacking ECDSA, he seems to build his lattice differently.
-* Modify the ClientHello from the timing attack to only accept ECDHE-ECDSA... (so that we can test it against different frameworks)
-* Truncate the hash correctly in the timing attack
+* Time UDP packet instead (and target DTLS). This would allow to play with raw sockets (ip packets) directly. Is this a good idea though?
+* Look at Nguyen way's of attacking ECDSA, he seems to build his lattice differently. Maybe we can get better results on the lattice attack
+* Modify the ClientHello from the timing attack to only accept ECDHE-ECDSA... (so that we can test it against different frameworks). Do a `openssl s_client -connect website:443 -cipher 'ECDHE-ECDSA'` with `-msg`, `-debug` or tcpdump the traffic to get the packet.
+* Truncate the hash correctly in the timing attack. I still get the hashes directly from the server because I'm lazy to understand [how OpenSSL truncate hashes](https://github.com/openssl/openssl/blob/master/crypto/ecdsa/ecs_ossl.c#L286)
