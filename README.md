@@ -8,13 +8,9 @@ It works on an unpatched version of OpenSSL, but theorically it should work on a
 
 But first, if you want to know more about this research [check the latest draft of the whitepaper](whitepaper.pdf), and here are also direct links to the [Timing Attack](setup/client/attack.c) and the [Lattice Attack](setup/client/offline/lattice.sage). And also a [demo](https://www.youtube.com/watch?v=P2NbKHn7RkI&feature=youtu.be) of the attack.
 
-If you know more about how to collect extremely accurate timing samples on a remote target I might need you. For now I get extremly bad results when attacking a remote target:
+If you know more about how to collect extremely accurate timing samples on a remote target I might need you. These are the last results I get:
 
-![sucky stats](http://i.imgur.com/mDaWP2B.png)
-
-**update on august 18th 2015**. I disabled Nagel's algorith, got better results, tried isolating the CPU, got even better results!
-
-![better](http://i.imgur.com/bF70cxr.png)
+![stats](http://i.imgur.com/Lt2Z5gD.png)
 
 ## Structure
 
