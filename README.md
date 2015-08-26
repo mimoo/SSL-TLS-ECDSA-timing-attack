@@ -8,7 +8,7 @@ It works on an unpatched version of OpenSSL, but theorically it should work on a
 
 But first, if you want to know more about this research [check the latest draft of the whitepaper](whitepaper.pdf), and here are also direct links to the [Timing Attack](setup/client/attack.c) and the [Lattice Attack](setup/client/offline/lattice.sage). And also a [demo](https://www.youtube.com/watch?v=P2NbKHn7RkI&feature=youtu.be) of the attack.
 
-If you know more about how to collect extremely accurate timing samples on a remote target I might need you. These are the last results I get:
+If you know more about how to collect extremely accurate timing samples on a remote target I might need you. These are the last results I get from a million signatures:
 
 ![stats](http://i.imgur.com/Lt2Z5gD.png)
 
