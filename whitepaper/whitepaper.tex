@@ -120,7 +120,7 @@ ECDSA, a more modern variant of DSA based on \textbf{Elliptic Curves}, was inven
 
 DSA is based on the \textbf{Discrete Logarithm Problem} (DLP) in prime-order subgroups of $\mathbb{Z}^{\ast}_p$. The fact that given $y = g^x \pmod{p}$ with $g$ an element of the multiplicative group $\mathbb{Z}_{p}^{\ast}$ ($p$ prime), it is \emph{hard} to compute the integer $x$. This problem can be found in other kinds of groups like the one we define with Elliptic Curves, it is then called the \textbf{Elliptic Curve Discrete Logarithm Problem} or ECDLP in some of the fields.\\
 
-Elliptic Curves are just some kind of curves usually defined as the points satisfying the \textbf{Weiestraß' equation} over a field $K$ along with a point $\mathcal{O}$ serving as the identity and called the \textit{point at infinity}:
+Elliptic Curves are just some kind of curves usually defined as the points satisfying the \textbf{Weiestraß' equation}:
 
 $$ y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6 $$
 \newpage
@@ -128,9 +128,9 @@ Although in our case, ECDSA only works on Weierstrass curves, which are a partic
 
 $$ y^2 = x^3 - 3x + b $$
 
-That set of points forms an abelian group (called the elliptic curve group) along with two operations (addition and multiplication) which are defined following a \textit{chord-and-tangent rule}. The multiplication of a scalar $k$ with a point $P$ from the curve is usually written as $Q = [k]P$. The ECDLP is stated as follow: it is computationally hard to compute $k$ if you only know $Q$ and $P$ in the above equation (and if they are big enough).
+That set of points over a field $K$ along with a point $\mathcal{O}$ serving as the identity and called the \textit{point at infinity} forms an abelian group called \textbf{the elliptic curve group}. This group has two operations, addition and multiplication, which are defined following a \textit{chord-and-tangent rule}. The multiplication of a scalar $k$ with a point $P$ from the curve is usually written as $Q = [k]P$. The ECDLP is stated as follow: it is computationally hard to compute $k$ if you only know $Q$ and $P$ in the above equation (and if they are big enough).\\
 
-The main advantage of ECDLP over DLP is that the most efficients attack on DLP (\textit{Index Calculus} attacks like the \textbf{General Number Field Sieve}) do not work for ECDLP. Keys in Elliptic Curve based algorithms are also much smaller than their counterparts based on conventional the Discrete Logarithm Problem, which allows for faster calculations and smaller certificates for equivalent levels of security. 
+The main advantage of ECDLP over DLP is that the most efficients attack on DLP (\textit{Index Calculus} attacks like the \textbf{General Number Field Sieve}) do not work for ECDLP. Keys in Elliptic Curve based algorithms are also much smaller than their counterparts based on conventional the Discrete Logarithm Problem, which allows for faster calculations and smaller certificates for equivalent levels of security\cite{vanstone}. 
 
 ECDSA carries the same principles as DSA. The public key comprises all the public parameters of the curve of our choice and a public key $Q = [x]P$ which is a random multiple $x$ of the base point $P$  where $x$ is also the private key.
 
@@ -150,7 +150,7 @@ Taking a look at the public part $(r, s)$ of an ECDSA signature:
 &r = [k] P\\
 &s = k^{-1} ( H(m) + x r ) \pmod{q}
 \end{align*}
-
+\newpage
 You can see in the second equation that knowing the nonce $k$ allows you to easily recover the private key $x$ (total break):
 
 $$
@@ -1313,6 +1313,8 @@ Finally many thanks for the awesome feedback on this whitepaper from Paul Kocher
 \bibitem{brumley-tuveri} B.B.Brumley and N.Tuveri {\em Remote Timing Attacks are Still Practical}
 
 \bibitem{boneh-venkatesan} D. Boneh and R. Venkatesan {\em Hardness of computing the most significant bits of secret keys in Diffie-Hellman and related schemes}
+
+\bibitem{vanstone} Harper, Menezes, Vanstone {\em Public-Key Cryptosystems with Very Small Key Lengths}
 
 \bibitem{HG-smart} N.A.Howgrave-Graham and N.P.Smart {\em Lattice Attacks on DSA}
 
