@@ -123,8 +123,12 @@ DSA is based on the \textbf{Discrete Logarithm Problem} (DLP) in prime-order sub
 Elliptic Curves are just some kind of curves usually defined as the points satisfying the \textbf{Weiestraß' equation} over a field $K$ along with a point $\mathcal{O}$ serving as the identity and called the \textit{point at infinity}:
 
 $$ y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6 $$
+\newpage
+Although in our case, ECDSA only works on Weierstrass curves, which are a particular subset of elliptic curves that can be written with the \textbf{short Weiestraß' equation}:
 
-That set of points forms an abelian group along with two operations (addition and multiplication) which are defined following a \textit{chord-and-tangent rule}. The multiplication of a scalar $k$ with a point $P$ from the curve is usually written as $Q = [k]P$. The ECDLP is stated as follow: it is computationally hard to compute $k$ if you only know $Q$ and $P$ in the above equation (and if they are big enough).
+$$ y^2 = x^3 - 3x + b $$
+
+That set of points forms an abelian group (called the elliptic curve group) along with two operations (addition and multiplication) which are defined following a \textit{chord-and-tangent rule}. The multiplication of a scalar $k$ with a point $P$ from the curve is usually written as $Q = [k]P$. The ECDLP is stated as follow: it is computationally hard to compute $k$ if you only know $Q$ and $P$ in the above equation (and if they are big enough).
 
 The main advantage of ECDLP over DLP is that the most efficients attack on DLP (\textit{Index Calculus} attacks like the \textbf{General Number Field Sieve}) do not work for ECDLP. Keys in Elliptic Curve based algorithms are also much smaller than their counterparts based on conventional the Discrete Logarithm Problem, which allows for faster calculations and smaller certificates for equivalent levels of security. 
 
@@ -931,6 +935,14 @@ After obtaining all the nonces and the timings, we plotted them and displayed th
 \label{fig:serverside}
 \end{figure}
 
+The frequency plot in figure \ref{fig:frequency_server} might be a better indication that the obvious strategy here is to cherry-pick the fastest responses and hope that they reach a pre-defined number of most significant bits set to zero.
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{frequency_server.png}
+\caption{The blue line represents the signatures generated with nonces of bitsize longer than 157 bits, the red line represents signatures correlated with nonces of bitsize inferior or equal to 157 bits.}
+\label{fig:frequency_server}
+\end{figure}
+
 Finally we did some statistics on the amount of short nonces, the statistics were approximately the same for 1,000 and for 10,000 signatures:
 
 \begin{figure}[H]
@@ -984,7 +996,7 @@ We will discuss in the following sections how many nonces we need to perform the
 
 \subsection{From a Remote Machine}
 
-We tried getting the same kind of results from a different server located in the same local network. But as to simplify testing and avoid parsing the responses, we modified the OpenSSL server as to store the truncated hashes and the signatures server side.
+We tried getting the same kind of results from a different server located in the same local network. The tests were performed on a Intel Pentium CPU 1403 @ 2.60GHz. To simplify testing and avoid parsing the responses, we modified the OpenSSL server  to store the truncated hashes and the signatures server side.
 
 The source code of the client is in Appendix A, it always sends the same \textit{HelloClient} packet (and the same \textit{client.Random}). The client counts the CPU cycles of the response time. If the attack is performed from multiple machines with different CPU frequencies then we would have to convert the CPU cycles into a time unit before gathering the data together.
 
@@ -1022,7 +1034,7 @@ length&amount&percentage\\
 162  &   184 &    36\\
 \bottomrule
 \end{tabular}
-\caption{Stats on the nonces that computed the fastest 500 signatures}
+\caption{Stats on the nonces that computed the fastest 500 signatures from 100,000 handshakes}
 }
 \hfill
 \parbox{.45\linewidth}{
@@ -1046,11 +1058,68 @@ length&amount&percentage\\
 162    & 2150 &   43\\
 \bottomrule
 \end{tabular}
-\caption{Stats on the nonces that computed the fastest 5,000 signatures}
+\caption{Stats on the nonces that computed the fastest 5,000 signatures from 100,000 handshakes}
 }
 \end{table}
 
-To eliminate the false positives, the idea here is to select a random subset of let's say 42 tuples (if we are aiming for nonces smaller than 156 bits) and do a lattice attack, if we do not find anything build another random subset of the same size. Rinse and repeat. This leads to $1.36 \times 10^{104}$ different combinations, this is impossible and this is because our timing measurements are not correlated to the bitsize of the nonces. With better measurements this attack would indeed be devastating.
+To eliminate the false positives, the idea here is to select a random subset of let's say 42 tuples (if we are aiming for nonces smaller than 156 bits) and do a lattice attack, if we do not find anything build another random subset of the same size. Rinse and repeat. This leads to more than $1.36 \times 10^{104}$ different combinations, which is impossible and this is because our timing measurements are not precise enough. With better measurements this attack would indeed be devastating.\\
+
+From there, we can imagine many other ways to get better results. \textbf{Hardware time stamping} is done with special Network Interface Controllers (NIC), and allows us to get our TCP packets time stamped to a nanosecond precision. Such an attack \href{https://vimeo.com/112575034}{was demonstrated last year by Paul McMillan} on an embedded device. It is a recent technology, mostly due to a need by the Precision Time Protocol (PTP) for extra timing precision to synchronize clocks throughout a computer network. This approach was not researched by this paper but might lead to more precision in the attack.\\
+The two other obvious solutions would be to get as close as possible to the target (which we are already doing) and to collect more samples. After collecting 10 million signatures (the collection lasted more than 19 hours) we do indeed get better results, although still not exploitable as seen in the following tables and in figure \ref{fig:frequency_client}. Note that every experiment we did gave very different results and the numbers displayed in this paper should not give any indication on general statistics.
+
+\begin{table}[H]
+\parbox{.45\linewidth}{
+\centering
+\begin{tabular}{@{} *3c @{}}
+\toprule
+length&amount&percentage\\
+\midrule
+150 &   1   &   2\\
+153  &   2   &    4\\
+154  &   1  &     2\\
+155  &   1  &    2\\
+156  &   3  &    6\\
+157   &  4  &    8\\
+158  &   5 &     10\\
+159  &   5 &     10\\
+160  &   11  &    22\\
+161  &   6 &    12\\
+162  &   11 &    22\\
+\bottomrule
+\end{tabular}
+\caption{Stats on the nonces that computed the fastest 50 signatures from 10 million handshakes}
+}
+\hfill
+\parbox{.45\linewidth}{
+\centering
+\begin{tabular}{@{} *3c @{}}
+\toprule
+length&amount&percentage\\
+\midrule
+149  &   1     &  1\\
+150  &   1     &  1\\
+152   &  3  &     3\\
+153   &  8  &     8\\
+154  &   1 &     1\\
+155  &   3 &     3\\
+156   &  5  &    5\\
+157  &   6    & 6\\
+158   &  10&     10\\
+159   &  9 &    9\\
+160  &   22 &    22\\
+161  &   11   & 11\\
+162    & 20 &   20\
+\bottomrule
+\end{tabular}
+\caption{Stats on the nonces that computed the fastest 100 signatures from 10 million handshake}
+}
+\end{table}
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{frequency_client.png}
+\caption{The blue line represents the signatures generated with nonces of bitsize longer than 157 bits, the red line represents signatures correlated with nonces of bitsize inferior or equal to 157 bits.}
+\label{fig:frequency_client}
+\end{figure}
 
 \subsection{The Lattice Attack}
 
@@ -1224,6 +1293,14 @@ A totally different take on this problem is to get rid of the randomness of the 
 We have seen in our own experiments that Remote timing attacks are \textbf{far from being practical}, even in the same local network. It already takes advanced measures to attain high precision of timings on the attacker machine, and the fact that we cannot control the jitter, the propagation time and the overall server's responsiveness make things extremely difficult for us.\\
 
 It's important to notice that the lattice attack should still have \textbf{room for improvement} and more resources would make the timing attack more efficient as well. The detailed and respected description of the TLS protocol would make such a potentially efficient attack particularly easy to perform against any TLS framework/library having such vulnerability.\\ \href{http://blog.cryptographyengineering.com/2012/03/surviving-bad-rng.html}{Some cryptographers} have already advised not to use ECDSA to cryptographically sign objects. The topic is currently a hot one in the \href{http://www.ietf.org/mail-archive/web/cfrg/current/maillist.html}{CFRG mailing list} as what new Signature scheme should become the standard in the years to come.
+
+\newpage
+
+\section*{Acknowledgements}
+
+This work would not have been possible without my two supervisors Tom Ritter and Guilhem Castagnos.\\
+I also want to thank B.B.Brumley and Paul McMillan for the discussions we had.\\
+Finally many thanks for the awesome feedback on this whitepaper from Paul Kocher, Brendan McMillion, Christian Belin, Mark Carney and MigMigg.
 
 \newpage
 
